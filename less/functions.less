@@ -1,0 +1,108 @@
+.blur ( @value ) {
+	-moz-filter:	blur( @value );
+	-webkit-filter:	blur( @value );
+	-o-filter:		blur( @value );
+	-ms-filter:		blur( @value );
+	filter:			blur( @value );
+}
+
+.box-shadow( @type, @blur, @spread, @color ) {
+	-webkit-box-shadow:	@type 0px 0px @blur @spread @color;
+	-moz-box-shadow:	@type 0px 0px @blur @spread @color;
+	box-shadow:			@type 0px 0px @blur @spread @color;
+}
+
+.box-shadow-inset( @blur, @spread, @color ) {
+	.box-shadow( inset, @blur, @spread, @color );
+}
+
+.brightness ( @value ) {
+	-moz-filter:	brightness( @value );
+	-webkit-filter:	brightness( @value );
+	-o-filter:		brightness( @value );
+	-ms-filter:		brightness( @value );
+	filter:			brightness( @value );
+}
+
+.center-vertical {
+	top:		50%;
+	transform:	translateY( -50% );
+}
+
+.transition ( @duration ) {
+	-webkit-transition:	all @duration ease-in-out;
+	-moz-transition:	all @duration ease-in-out;
+	-o-transition:		all @duration ease-in-out;
+	transition:			all @duration ease-in-out;
+}
+
+.scale ( @value ) {
+	-webkit-transform:	scale( @value );
+	-moz-transform:		scale( @value );
+	-o-transform:		scale( @value );
+	transform:			scale( @value );
+}
+
+.rotate ( @value ) {
+	-webkit-transform:	rotate( @value );
+	-moz-transform:		rotate( @value );
+	-o-transform:		rotate( @value );
+	transform:			rotate( @value );
+}
+
+.effectDarkenBlur( @blur, @brightness ) {
+	-moz-filter:	blur( @blur ) brightness( @brightness );
+	-webkit-filter:	blur( @blur ) brightness( @brightness );
+	-o-filter:		blur( @blur ) brightness( @brightness );
+	-ms-filter:		blur( @blur ) brightness( @brightness );
+	filter:			blur( @blur ) brightness( @brightness );
+}
+
+.effectZoomRotate ( @scale, @rotate ) {
+	-webkit-transform:	rotate( @rotate ) scale( @scale );
+	-moz-transform:		rotate( @rotate ) scale( @scale );
+	-o-transform:		rotate( @rotate ) scale( @scale );
+	transform:			rotate( @rotate ) scale( @scale );
+}
+
+.opacity ( @opacity ) {
+	opacity:	@opacity;
+}
+
+.font-smoothing {
+	@font-smoothing:		antialiased;
+
+	-webkit-font-smoothing:	@font-smoothing;
+	-moz-font-smoothing:	@font-smoothing;
+	font-smoothing:			@font-smoothing;
+}
+
+.link ( @color-base, @color_hover ) {
+	color:	@color-base;
+
+	&:hover,
+	&:focus {
+		color:				@color_hover;
+		text-decoration:	none;
+
+		.transition( .1s );
+	}
+
+	&:active {
+		color:	@color_hover;
+	}
+}
+
+.clean () {
+	border:			0;
+	border-radius:	0;
+	line-height:	100%;
+	margin:			0;
+	padding:		0;
+
+	overflow:		hidden;
+	
+	-webkit-box-shadow:	none;
+	-moz-box-shadow:	none;
+	box-shadow:			none;
+}
