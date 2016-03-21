@@ -111,6 +111,10 @@ function image_dir() {
 	echo get_template_directory_uri() .'/img';
 }	// end function
 
+function is_draft() {
+	return is_user_logged_in() && isset( $_GET[ 'p' ] ) && ! empty( $_GET[ 'p' ] );
+}	// end function
+
 function load_more() {
 	$store = [
 		'message'	=>	'Bad request',
@@ -147,8 +151,9 @@ function my_page_menu_args( $args ) {
 
 function my_post_queries( $query ) {
 	if( ! is_admin() && $query -> is_main_query() ) {
-		$query -> set( 'post_status', 'publish' );
-		
+
+		$query -> set( 'post_status', is_draft() ? 'draft' : 'publish' );
+
 		if( is_home() )
 			$query -> set( 'posts_per_page', 15 );
 
