@@ -98,54 +98,6 @@
 
 <article>
 	<div class="container">
-		<aside id="gallery-generic" class="gallery">
-			<div class="gallery-content">
-				<a class="fancybox" rel="gallery" href="http://farm2.staticflickr.com/1617/24108587812_6c9825d0da_b.jpg"><picture>
-					<div>
-						<img src="<?php image_dir();?>/gallery.png" alt="" />
-					</div>
-					<span>+</span>
-				</picture></a>
-
-				<a class="fancybox" rel="gallery" href="http://farm2.staticflickr.com/1617/24108587812_6c9825d0da_b.jpg"><picture>
-					<div>
-						<img src="<?php image_dir();?>/gallery.png" alt="" />
-					</div>
-					<span>+</span>
-				</picture></a>
-
-				<a class="fancybox" rel="gallery" href="http://farm2.staticflickr.com/1617/24108587812_6c9825d0da_b.jpg"><picture>
-					<div>
-						<img src="<?php image_dir();?>/gallery.png" alt="" />
-					</div>
-					<span>+</span>
-				</picture></a>
-
-				<a class="fancybox" rel="gallery" href="http://farm2.staticflickr.com/1617/24108587812_6c9825d0da_b.jpg"><picture>
-					<div>
-						<img src="<?php image_dir();?>/gallery.png" alt="" />
-					</div>
-					<span>+</span>
-				</picture></a>
-
-				<a class="fancybox" rel="gallery" href="http://farm2.staticflickr.com/1617/24108587812_6c9825d0da_b.jpg"><picture>
-					<div>
-						<img src="<?php image_dir();?>/gallery.png" alt="" />
-					</div>
-					<span>+</span>
-				</picture></a>
-			</div>
-
-			<div class="gallery-controls">
-				<button class="left"><span class="fa fa-chevron-left"></span></button>
-				<button class="right"><span class="fa fa-chevron-right"></span></button>
-			</div>
-		</aside>
-	</div>
-</article>
-
-<article>
-	<div class="container">
 		<form name="form" novalidate="novalidate">
 			<div class="input-group">
 				<input maxlength="100" name="search" type="search" data-ng-model="input.search" data-ng-required="true" />
