@@ -1,44 +1,21 @@
 <section class="container">
 	<div class="row">
 		<?php
-			$articles = [
-				'column0'	=>	[],
-				'column1'	=>	[],
-				'column2'	=>	[]
-			];
-
-			if( have_posts() )
-			foreach( get_articles( 'post_status=publish&posts_per_page=15&paged=1', TRUE ) -> data as $key => $value ) {
-
-				if( ( $key ) % 3 === 0 )
-					$articles[ 'column0' ][] = $value;
-				elseif( ( $key + 1 ) % 3 === 0 )
-					$articles[ 'column2' ][] = $value;
-				else
-					$articles[ 'column1' ][] = $value;
-			}	// end foreach
-			unset( $key, $value );
+			try {
+				foreach( get_publications_for( 'home', TRUE ) -> data as $article ) {
+					echo $article;
+				}	// end foreach
+				unset( $article );
+			}	// end try
+			catch( Exception $error ) {
+				echo $error -> getMessage();
+			}	// end catch
 		?>
-		<article class="col-xs-4">
-			<?php
-				foreach( $articles[ 'column0' ] as $article )	echo $article;
-				unset( $article );
-			?>
-		</article>
 
-		<article class="col-xs-4">
-			<?php
-				foreach( $articles[ 'column1' ] as $article )	echo $article;
-				unset( $article );
-			?>
-		</article>
-
-		<article class="col-xs-4">
-			<?php
-				foreach( $articles[ 'column2' ] as $article )	echo $article;
-				unset( $article );
-			?>
-		</article>
+		<div class="social-network">
+			<a href="#" data-ng-click="share( $event, 'test', 'http://olsonindmx.artezia.mx/', 'facebook' )"><span class="fa fa-facebook"></span></a>
+			<a href="#" data-ng-click="share( $event, 'test', 'http://olsonindmx.artezia.mx/', 'twitter' )"><span class="fa fa-twitter"></span></a>
+		</div>
 
 		<!-- <article class="col-xs-4 card" data-ng-repeat="post in posts" data-ng-click="go( post.url )">
 			<div class="content">
@@ -56,9 +33,10 @@
 		</article> -->
 	</div>
 </section>
+
 <aside>
 	<div class="container text-center">
-		<button type="button" data-ng-click="loadMore()" data-ng-hide="loading">Ver más</button>
+		<button type="button" data-ng-click="loadMore( 'uncategorized' )" data-ng-hide="loading">Ver más</button>
 		<span class="fa fa-circle-o-notch fa-spin loading" data-ng-show="loading"></span>
 	</div>
 </aside>

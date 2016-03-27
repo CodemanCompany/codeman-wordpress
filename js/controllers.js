@@ -11,8 +11,10 @@ function MainController( $scope, request, validate ) {
 		"page":		2
 	};
 
-	$scope.loadMore = function() {
+	$scope.loadMore = function( category ) {
 		$scope.loading = true;
+
+		data.category = category;
 
 		request.get( request.url.controller.wordpress, data )
 		.then( function( response ) {
@@ -23,6 +25,38 @@ function MainController( $scope, request, validate ) {
 
 			$scope.loading = false;
 		}, function( error ) {} )
+	};
+
+	$scope.share = function( event, content, url, network ) {
+		event.preventDefault();
+
+		if( ! url || ! network )
+			return;
+
+		var share = null;
+
+		if( network === 'facebook' )
+			share = 'https://www.facebook.com/sharer/sharer.php?u=' + url;
+		else if( network === 'twitter' )
+			share = 'https://twitter.com/share?via=graziamx&text=' + content + '&url=' + url;
+		else
+			return;
+
+		var gadget = {
+			"height":	300,
+			"width":	600
+		};
+
+		var display = {
+			"left":	( screen.width / 2 ) - ( gadget.width / 2 ),
+			"top":	( screen.height / 2 ) - ( gadget.height / 2 )
+		};
+
+		window.open(
+			encodeURI( share ),
+			'',
+			'menubar=no, toolbar=no, resizable=no, scrollbars=yes, height=' + gadget.height + ',width=' + gadget.width + ',left=' + display.left + ',top=' + display.top
+		);
 	};
 
 	$scope.search = function( event, input ) {

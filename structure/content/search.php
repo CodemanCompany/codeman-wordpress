@@ -11,7 +11,7 @@
 		<a href="<?php get_url();?>">link</a>
 		
 		<?php endif; endwhile;
-		else: echo 'No se encontraron resultados para la búsqueda.'; endif;?>
+		else: echo '<p>No se encontraron resultados para la búsqueda.</p>'; endif;?>
 		<hr />
 		<div class="nav-previous text-left"><?php next_posts_link( 'Entradas anteriores' ); ?></div>
 		<div class="nav-next text-right"><?php previous_posts_link( 'Entradas recientes' ); ?></div>
