@@ -22,10 +22,12 @@
 			<p><?php the_content();?></p>
 			<a href="/">back</a>
 
+			<pre>
 			<?php
 				$gallery = get_gallery();
-				var_dump( $gallery -> data )
+				var_dump( $gallery );
 			?>
+			</pre>
 			<br />
 
 			<div class="fb-comments" data-href='<?php get_location();?>' data-numposts="5" data-width="100%"></div>

@@ -18,12 +18,23 @@ function get_custom( $key ) {
 }	// end function
 
 function get_gallery() {
-	$gallery = get_post_gallery_images();
+	$gallery = get_post_gallery( get_the_ID(), false );
 
-	return ( object ) [
-		'data'	=>	$gallery,
-		'total'	=>	count( $gallery )
+	$gallery = ( object ) [
+		'ids'		=>	explode( ',', $gallery[ 'ids' ] ),
+		'images'	=>	$gallery[ 'src' ]
 	];
+	$gallery -> total = count( $gallery -> ids );
+
+	foreach( $gallery -> images as $key => &$value ) {
+		$value = [
+			'description'	=>	get_post( $gallery -> ids[ $key ] ) -> post_excerpt,
+			'src'			=>	$value
+		];
+	}	// end foreach
+	unset( $key, $value );
+
+	return $gallery;
 }	// end function
 
 function get_image( $echo = TRUE ) {
