@@ -27,30 +27,36 @@ function MainController( $scope, request, validate ) {
 		}, function( error ) {} )
 	};
 
-	$scope.share = function( event, content, url, network ) {
+	$scope.share = function( event, data, url, network ) {
 		event.preventDefault();
 
 		if( ! url || ! network )
 			return;
 
 		var share = null;
-
-		if( network === 'facebook' )
-			share = 'https://www.facebook.com/sharer/sharer.php?u=' + url;
-		else if( network === 'twitter' )
-			share = 'https://twitter.com/share?via=graziamx&text=' + content + '&url=' + url;
-		else
-			return;
-
 		var gadget = {
 			"height":	300,
 			"width":	600
 		};
-
 		var display = {
 			"left":	( screen.width / 2 ) - ( gadget.width / 2 ),
 			"top":	( screen.height / 2 ) - ( gadget.height / 2 )
 		};
+
+		if( network === 'facebook' )
+			share = 'https://www.facebook.com/sharer/sharer.php?u=' + url;
+		else if( network === 'google-plus' )
+			share = 'https://plus.google.com/share?url=' + url;
+		else if( network === 'pinterest' )
+			share = 'http://pinterest.com/pin/create/button/?url=' + url + '&description=' + data.content + '&media=' + data.media;
+		else if( network === 'twitter' )
+			share = 'https://twitter.com/share?via=graziamx&text=' + data.content + '&url=' + url;
+		else if( network === 'whatsapp' ) {
+			location.href = encodeURI( "whatsapp://send?text=GraziaMX: " + data.content + ' ' + url );
+			return;
+		}
+		else
+			return;
 
 		window.open(
 			encodeURI( share ),

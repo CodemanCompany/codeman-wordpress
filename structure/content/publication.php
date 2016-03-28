@@ -9,12 +9,20 @@
 			
 			<?php if( have_posts() ): while( have_posts() ): the_post();?>
 
-			<div class="fb-like" data-href='<?php get_location();?>' data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+			<!-- Clean Style in line -->
+			<div class="fb-like" style="position:relative; top:-7px;" data-href='<?php get_location();?>' data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 			
 			<a href="https://twitter.com/share" class="twitter-share-button" data-via="graziamx">Tweet</a>
 			<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
-			<?php echo get_custom( 'video' );?>
+			<script src="https://apis.google.com/js/platform.js" async defer>
+			{lang: 'es-419'}
+			</script>
+			<div class="g-plusone" data-size="medium" data-href="<?php get_location();?>"></div>
+
+			<script type="text/javascript" async defer src="//assets.pinterest.com/js/pinit.js"></script>
+			<a href="https://www.pinterest.com/pin/create/button/"><img src="//assets.pinterest.com/images/pidgets/pinit_fg_en_rect_gray_20.png" alt="Pinterest" /></a>
+
 			<p><strong><?php the_category( ' ' );?></strong></p>
 			<img class="img-responsive" src="<?php get_image();?>" alt="" />
 			<h2><?php the_title();?></h2>
@@ -28,7 +36,8 @@
 				var_dump( $gallery );
 			?>
 			</pre>
-			<br />
+
+			<?php get_jwplayer( '7ZGeGJG7' );?>
 
 			<div class="fb-comments" data-href='<?php get_location();?>' data-numposts="5" data-width="100%"></div>
 

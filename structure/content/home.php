@@ -13,8 +13,11 @@
 		?>
 
 		<div class="social-network">
-			<a href="#" data-ng-click="share( $event, 'test', 'http://olsonindmx.artezia.mx/', 'facebook' )"><span class="fa fa-facebook"></span></a>
-			<a href="#" data-ng-click="share( $event, 'test', 'http://olsonindmx.artezia.mx/', 'twitter' )"><span class="fa fa-twitter"></span></a>
+			<a href="#" data-ng-click="share( $event, { content: 'test' }, 'http://olsonindmx.artezia.mx/', 'facebook' )"><span class="fa fa-facebook"></span></a>
+			<a href="#" data-ng-click="share( $event, { content: 'test' }, 'http://olsonindmx.artezia.mx/', 'twitter' )"><span class="fa fa-twitter"></span></a>
+			<a href="#" data-ng-click="share( $event, { media: 'url_image', content: 'test' }, 'http://olsonindmx.artezia.mx/', 'pinterest' )"><span class="fa fa-pinterest"></span></a>
+			<a href="#" data-ng-click="share( $event, { content: 'test' }, 'http://olsonindmx.artezia.mx/', 'google-plus' )"><span class="fa fa-google-plus"></span></a>
+			<a class="hidden-lg hidden-md hidden-sm" href="#" data-action="share/whatsapp/share" data-ng-click="share( $event, { content: 'test' }, 'http://olsonindmx.artezia.mx/', 'whatsapp' )"><span class="fa fa-whatsapp"></span></a>
 		</div>
 
 		<!-- <article class="col-xs-4 card" data-ng-repeat="post in posts" data-ng-click="go( post.url )">

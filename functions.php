@@ -17,8 +17,19 @@ function get_custom( $key ) {
 	return get_post_custom_values( $key )[ 0 ];
 }	// end function
 
+function get_jwplayer( $service = NULL ) {
+	if( is_null( $service ) )
+		return;
+
+	$video = get_custom( 'video' );
+	echo $video ? '<div id="botr_' . $video . '_' . $service . '_div"></div><script type="text/javascript" src="https://content.jwplatform.com/players/' . $video . '-' . $service . '.js"></script>' : '';
+}	// end function
+
 function get_gallery() {
 	$gallery = get_post_gallery( get_the_ID(), false );
+
+	if( ! $gallery )
+		return false;
 
 	$gallery = ( object ) [
 		'ids'		=>	explode( ',', $gallery[ 'ids' ] ),
