@@ -38,7 +38,7 @@
 
 <aside>
 	<div class="container text-center">
-		<button type="button" data-ng-click="loadMore( 'uncategorized' )" data-ng-hide="loading">Ver más</button>
+		<button type="button" data-ng-click="loadMore()" data-ng-hide="loading">Ver más</button>
 		<span class="fa fa-circle-o-notch fa-spin loading" data-ng-show="loading"></span>
 	</div>
 </aside>

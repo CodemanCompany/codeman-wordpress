@@ -8,7 +8,7 @@ function MainController( $scope, request, validate ) {
 
 	var data = {
 		"action":	'load_more',
-		"page":		2
+		"page":		1
 	};
 
 	$scope.loadMore = function( category ) {
@@ -19,7 +19,7 @@ function MainController( $scope, request, validate ) {
 		request.get( request.url.controller.wordpress, data )
 		.then( function( response ) {
 			if( response.data.result === 'success' ) {
-				$scope.data = response.data.data;
+				$scope.posts = request.getData( response ).data;
 				data.page++;
 			}	// end if
 

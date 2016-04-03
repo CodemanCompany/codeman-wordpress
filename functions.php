@@ -13,6 +13,17 @@ function codeman_wp_title( $title, $sep ) {
 	return $title;
 }	// end function
 
+function get_config( $params = NULL ) {
+	$is_singular = is_singular();
+	return [
+		'category_name'		=>	isset( $params[ 'category_name' ] ) ? $params[ 'category_name' ] : ( $is_singular ? get_data( 'category' )[ 0 ] -> slug : NULL ),
+		'paged'				=>	isset( $params[ 'paged' ] ) ? $params[ 'paged' ] : 1,
+		'post__not_in'		=>	$is_singular ? [ get_the_ID() ] : NULL,
+		'post_status'		=>	'publish',
+		'posts_per_page'	=>	isset( $params[ 'posts_per_page' ] ) ? $params[ 'posts_per_page' ] : POSTS_PER_PAGE
+	];
+}	// end function
+
 function get_custom( $params = NULL ) {
 	if( is_null( $params ) )
 		throw new Exception( 'The parameters are incorrect.' );
@@ -130,29 +141,30 @@ function get_publications( $query = NULL ) {
 	];
 }	// end function
 
-// TODO: complejidad para mayor personalización
-//  por numero y categoria poner en array los parametros
 function get_publications_for( $params = NULL ) {
 	if( is_null( $params ) )
-		throw new Exception( 'It is not specified a section.' );
+		throw new Exception( 'The parameters are not correct.' );
 	elseif( isset( $params[ 'section' ] ) ) {
 		if( $params[ 'section' ] === 'home' )
-			return get_publications( 'post_status=publish&posts_per_page=' . POSTS_PER_PAGE . '&paged=1' );
-		elseif( $params[ 'section' ] === 'sidebar' ) {
-			$config = [
-				'category_name'		=>	is_singular() ? get_data( 'category' )[ 0 ] -> slug : NULL,
-				'paged'				=>	1,
-				'post__not_in'		=>	[ get_the_ID() ],
-				'post_status'		=>	'publish',
-				'posts_per_page'	=>	POSTS_PER_SIDEBAR
-			];
-			return get_publications( $config );
-		}	// end elseif
+			return get_publications( get_config() );
+		elseif( $params[ 'section' ] === 'sidebar' )
+			return get_publications( get_config( [ 'posts_per_page' => POSTS_PER_SIDEBAR ] ) );
 		else
 			throw new Exception( 'This section is not found.' );
 	}	// end elseif
-	// else
-	// 	throw new Exception( 'This section is not found.' );
+	elseif( isset( $params[ 'number' ] ) ) {
+		if( isset( $params[ 'category' ] ) )
+			return get_publications( get_config( [
+				'category_name'		=>	$params[ 'category' ],
+				'posts_per_page'	=>	$params[ 'number' ]
+			] ) );
+		else
+			return get_publications( get_config( [ 'posts_per_page' => $params[ 'number' ] ] ) );
+	}	// end elseif
+	elseif( isset( $params[ 'category' ] ) )
+		return get_publications( get_config( [ 'category_name' => $params[ 'category' ] ] ) );
+	else
+		throw new Exception( 'Not found.' );
 }	// end function
 
 function get_search( $echo = TRUE ) {
@@ -193,8 +205,11 @@ function load_more() {
 		// $_GET[ 'page' ] > 1	&&
 		( ( $_GET[ 'page' ] - 1 ) * POSTS_PER_PAGE ) - wp_count_posts() -> publish < 0
 	) {
-		$category = isset( $_GET[ 'category' ] ) && ! empty( $_GET[ 'category' ] ) ? '&category_name=' . $_GET[ 'category' ] : NULL;
-		$data = get_publications( 'post_status=publish&posts_per_page=' . POSTS_PER_PAGE . '&paged=' . $_GET[ 'page' ] . $category );
+		$data = get_publications( get_config( [
+			'category_name'		=>	$_GET[ 'category' ],
+			'paged'				=>	$_GET[ 'page' ],
+			'posts_per_page'	=>	POSTS_PER_PAGE
+		] ) );
 
 		$store = [
 			'data'	=>	$data -> data,
@@ -218,14 +233,15 @@ function my_post_queries( $query ) {
 	if( ! is_admin() && $query -> is_main_query() ) {
 		$query -> set( 'post_status', is_draft() ? 'draft' : 'publish' );
 
-		if( is_home() )
-			$query -> set( 'posts_per_page', POSTS_PER_PAGE );
+		// if( is_home() )
+		// 	$query -> set( 'posts_per_page', POSTS_PER_PAGE );
 
-		elseif( is_category() )
-			$query -> set( 'posts_per_page', POSTS_PER_PAGE );
+		// elseif( is_category() )
+		// 	$query -> set( 'posts_per_page', POSTS_PER_PAGE );
 
-		elseif( is_search() )
-			$query -> set( 'posts_per_page', POSTS_PER_PAGE );
+		// elseif( is_search() )
+		// 	$query -> set( 'posts_per_page', POSTS_PER_PAGE );
+		$query -> set( 'posts_per_page', POSTS_PER_PAGE );
 	}	// end if
 }	// end function
 
