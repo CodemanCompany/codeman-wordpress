@@ -2,23 +2,22 @@
 	<div class="row">
 		<?php
 			try {
-				foreach( get_publications_for( 'home', TRUE ) -> data as $article ) {
-					echo $article;
-				}	// end foreach
+				foreach( get_publications_for( [ 'section' => 'home'] ) -> data as $article ):?>
+					<pre><?php var_dump( $article );?></pre>
+					<div class="social-network">
+						<a href="#" data-ng-click="share( $event, { content: '<?php echo $article -> content;?>' }, '<?php echo $article -> url;?>', 'facebook' )"><span class="fa fa-facebook"></span></a>
+						<a href="#" data-ng-click="share( $event, { content: '<?php echo $article -> content;?>' }, '<?php echo $article -> url;?>', 'twitter' )"><span class="fa fa-twitter"></span></a>
+						<a href="#" data-ng-click="share( $event, { media: '<?php echo $article -> image;?>', content: '<?php echo $article -> content;?>' }, '<?php echo $article -> url;?>', 'pinterest' )"><span class="fa fa-pinterest"></span></a>
+						<a href="#" data-ng-click="share( $event, { content: '<?php echo $article -> content;?>' }, '<?php echo $article -> url;?>', 'google-plus' )"><span class="fa fa-google-plus"></span></a>
+						<a class="hidden-lg hidden-md hidden-sm" href="#" data-action="share/whatsapp/share" data-ng-click="share( $event, { content: '<?php echo $article -> content;?>' }, '<?php echo $article -> url;?>', 'whatsapp' )"><span class="fa fa-whatsapp"></span></a>
+					</div>
+				<?php endforeach;
 				unset( $article );
 			}	// end try
 			catch( Exception $error ) {
 				echo $error -> getMessage();
 			}	// end catch
 		?>
-
-		<div class="social-network">
-			<a href="#" data-ng-click="share( $event, { content: 'test' }, 'http://olsonindmx.artezia.mx/', 'facebook' )"><span class="fa fa-facebook"></span></a>
-			<a href="#" data-ng-click="share( $event, { content: 'test' }, 'http://olsonindmx.artezia.mx/', 'twitter' )"><span class="fa fa-twitter"></span></a>
-			<a href="#" data-ng-click="share( $event, { media: 'url_image', content: 'test' }, 'http://olsonindmx.artezia.mx/', 'pinterest' )"><span class="fa fa-pinterest"></span></a>
-			<a href="#" data-ng-click="share( $event, { content: 'test' }, 'http://olsonindmx.artezia.mx/', 'google-plus' )"><span class="fa fa-google-plus"></span></a>
-			<a class="hidden-lg hidden-md hidden-sm" href="#" data-action="share/whatsapp/share" data-ng-click="share( $event, { content: 'test' }, 'http://olsonindmx.artezia.mx/', 'whatsapp' )"><span class="fa fa-whatsapp"></span></a>
-		</div>
 
 		<!-- <article class="col-xs-4 card" data-ng-repeat="post in posts" data-ng-click="go( post.url )">
 			<div class="content">

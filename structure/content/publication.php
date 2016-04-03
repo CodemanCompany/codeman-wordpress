@@ -28,7 +28,7 @@
 			<h2><?php the_title();?></h2>
 			<p><span class="text-muted"><?php the_date();?></span></p>
 			<p><?php the_content();?></p>
-			<a href="/">back</a>
+			<a href="/category/<?php echo get_data( 'category' )[ 0 ] -> slug;?>/">back</a>
 
 			<pre>
 			<?php
@@ -45,17 +45,7 @@
 		</article>	
 
 		<aside class="col-xs-3">
-			<?php
-				try {
-					foreach( get_publications_for( 'publication', TRUE ) -> data as $article ) {
-						echo $article;
-					}	// end foreach
-					unset( $article );
-				}	// end try
-				catch( Exception $error ) {
-					echo $error -> getMessage();
-				}	// end catch
-			?>
+			<?php get_template_part( 'structure/sidebar' );?>
 		</aside>
 	</div>
 </div>

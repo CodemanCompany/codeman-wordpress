@@ -13,15 +13,38 @@ function codeman_wp_title( $title, $sep ) {
 	return $title;
 }	// end function
 
-function get_custom( $key ) {
-	return get_post_custom_values( $key )[ 0 ];
+function get_custom( $params = NULL ) {
+	if( is_null( $params ) )
+		throw new Exception( 'The parameters are incorrect.' );
+
+	return is_null( $store = get_post_custom_values( $params[ 'key' ], $params[ 'id' ] ) ) ? NULL : $store[ 0 ];
+}	// end function
+
+function get_data( $type = NULL, $id = NULL ) {
+	if( is_null( $type ) )
+		throw new Exception( 'Wrong type.' );
+	elseif( $type === 'category' ) {
+		$categories = [];
+		foreach( get_the_category( $id ) as $key => $category ) {
+			$categories[] = ( object ) [
+				'index'	=>	$key,
+				'name'	=>	$category -> name,
+				'slug'	=>	$category -> slug,
+				'url'	=>	get_category_link( $category -> cat_ID )
+			];
+		}	// end foreach
+		unset( $key, $category );
+		return $categories;
+	}	// end elseif
+
+	return NULL;
 }	// end function
 
 function get_jwplayer( $service = NULL ) {
 	if( is_null( $service ) )
 		return;
 
-	$video = get_custom( 'video' );
+	$video = get_custom( [ 'key' => 'video' ] );
 	echo $video ? '<div id="botr_' . $video . '_' . $service . '_div"></div><script type="text/javascript" src="https://content.jwplatform.com/players/' . $video . '-' . $service . '.js"></script>' : '';
 }	// end function
 
@@ -38,12 +61,13 @@ function get_gallery() {
 	$gallery -> total = count( $gallery -> ids );
 
 	foreach( $gallery -> images as $key => &$value ) {
-		$value = [
+		$value = ( object ) [
 			'description'	=>	get_post( $gallery -> ids[ $key ] ) -> post_excerpt,
+			'index'			=>	$key,
 			'src'			=>	$value
 		];
 	}	// end foreach
-	unset( $key, $value );
+	unset( $key, $value, $gallery -> ids );
 
 	return $gallery;
 }	// end function
@@ -66,58 +90,39 @@ function get_location( $echo = TRUE ) {
 	echo $location;
 }	// end function
 
-// TODO: Check, external
-function get_piece( $data = NULL ) {
-	if( is_null( $data ) )
-		return FALSE;
-
-	// TODO: Standard
-	return
-	"<article class=\"card\" data-ng-click=\"go( '{$data -> url}' )\">
-		<div class=\"content\">
-			<div class=\"category\"><a href=\"{$data -> category-> url}\">{$data -> category-> name}</a></div>
-			<div class=\"card-image\">
-				<img class=\"img-responsive\" src=\"{$data -> image}\" alt=\"\" />
-			</div>
-			<div class=\"card-content\">
-				<h2><a href=\"{$data -> url}\">{$data -> title}</a></h2>
-				<p>{$data -> content}</p>
-				<br />
-				<div><a class=\"shared\" href=\"#\">COMPARTIR</a></div>
-			</div>
-		</div>
-	</article>";
-}	// end function
-
-function get_publications( $query = NULL, $template = FALSE ) {
+function get_publications( $query = NULL ) {
 	if( is_null( $query ) || ! is_array( $query = query_posts( $query ) ) )
 		throw new Exception( 'The query is wrong.' );
 
 	$posts = [];
 
-	foreach( $query as $post ) {
+	foreach( $query as $key => $post ) {
+		$category = get_the_category( $post -> ID )[ 0 ];
 		$store = ( object ) [
-			'id'		=>	$post -> ID,
-			'image'		=>	current( get_attached_media( 'image', $post -> ID ) ) -> guid,
-			'title'		=>	$post -> post_title,
+			'category'	=>	get_data( 'category', $post -> ID ),
 			'content'	=>	strstr( $post -> post_content, '<!--more-->', true ),
-			'category'	=>	( object ) [
-				'name'	=>	get_the_category( $post -> ID )[ 0 ] -> name,
-				'url'	=>	get_category_link( get_the_category( $post -> ID )[ 0 ] -> cat_ID )
-			],
+			'custom'	=>	[],
 			'date'		=>	get_the_date( '', $post -> ID ),
-			'url'		=>	get_permalink( $post -> ID ),
+			'field'		=>	( object ) [
+				'audio'		=>	get_custom( [ 'id' => $post -> ID, 'key' => 'audio' ] ),
+				'video'		=>	get_custom( [ 'id' => $post -> ID, 'key' => 'video' ] )
+			],
+			'id'		=>	$post -> ID,
+			'index'		=>	$key,
+			'image'		=>	current( get_attached_media( 'image', $post -> ID ) ) -> guid,
 			'modified'	=>	$post -> post_modified,
-			'status'	=>	$post -> post_status
+			'status'	=>	$post -> post_status,
+			'tags'		=>	get_the_tags( $post -> ID ),
+			'title'		=>	$post -> post_title,
+			'url'		=>	get_permalink( $post -> ID )
 		];
 
-		if( ! is_null( $video = get_post_custom_values( 'video', $post -> ID ) ) )
-			$store -> video = $video[ 0 ];
-
+		// filters
 		$store -> content = $store -> content ? $store -> content : 'It does not have a description.';
-		$posts[] = $template === TRUE ? get_piece( $store ) : $store;
+
+		$posts[] = $store;
 	}	// end foreach
-	unset( $post );
+	unset( $key, $post );
 
 	return ( object ) [
 		'data'	=>	$posts,
@@ -125,23 +130,30 @@ function get_publications( $query = NULL, $template = FALSE ) {
 	];
 }	// end function
 
-function get_publications_for( $section = NULL, $template = NULL ) {
-	if( is_null( $section ) )
+// TODO: complejidad para mayor personalización
+//  por numero y categoria poner en array los parametros
+function get_publications_for( $params = NULL ) {
+	if( is_null( $params ) )
 		throw new Exception( 'It is not specified a section.' );
-	elseif( $section === 'home' )
-		return get_publications( 'post_status=publish&posts_per_page=' . POSTS_PER_PAGE . '&paged=1', $template );
-	elseif( $section === 'publication' ) {
-		$config = [
-			'paged'				=>	1,
-			'post__not_in'		=>	[ get_the_ID() ],
-			'post_status'		=>	'publish',
-			'posts_per_page'	=>	POSTS_PER_SIDEBAR
-		];
-		return get_publications( $config, $template );
+	elseif( isset( $params[ 'section' ] ) ) {
+		if( $params[ 'section' ] === 'home' )
+			return get_publications( 'post_status=publish&posts_per_page=' . POSTS_PER_PAGE . '&paged=1' );
+		elseif( $params[ 'section' ] === 'sidebar' ) {
+			$config = [
+				'category_name'		=>	is_singular() ? get_data( 'category' )[ 0 ] -> slug : NULL,
+				'paged'				=>	1,
+				'post__not_in'		=>	[ get_the_ID() ],
+				'post_status'		=>	'publish',
+				'posts_per_page'	=>	POSTS_PER_SIDEBAR
+			];
+			return get_publications( $config );
+		}	// end elseif
+		else
+			throw new Exception( 'This section is not found.' );
 	}	// end elseif
-	else
-		throw new Exception( 'This section is not found.' );
-}	// end if
+	// else
+	// 	throw new Exception( 'This section is not found.' );
+}	// end function
 
 function get_search( $echo = TRUE ) {
 	if( ! isset( $_GET[ 's' ] ) )
