@@ -4,7 +4,8 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.js"></script>
 <script src="<?php bloginfo( 'template_url' );?>/js/lib/bootstrap.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-sanitize.min.js"></script>
 <script src="<?php bloginfo( 'template_url' );?>/js/app.js"></script>
 <script src="<?php bloginfo( 'template_url' );?>/js/factories.js"></script>
 <script src="<?php bloginfo( 'template_url' );?>/js/controllers.js"></script>

@@ -19,7 +19,7 @@
 			}	// end catch
 		?>
 
-		<!-- <article class="col-xs-4 card" data-ng-repeat="post in posts" data-ng-click="go( post.url )">
+		<article class="col-xs-4 card" data-ng-repeat="post in posts" data-ng-click="go( post.url )">
 			<div class="content">
 				<div class="card-image">
 					<img class="img-responsive" data-ng-src="{{post.image}}" alt="" />
@@ -27,12 +27,12 @@
 				<span class="category"><a href="{{post.category.url}}">{{post.category.name}}</a></span>
 				<div class="card-content">
 					<h2><a href="{{post.url}}">{{post.title}}</a></h2>
-					<p>{{post.content}}</p>
+					<div data-ng-bind-html="post.content"></div>
 					<br />
 					<div><a class="shared" href="#">COMPARTIR</a></div>
 				</div>
 			</div>
-		</article> -->
+		</article>
 	</div>
 </section>
 
