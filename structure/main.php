@@ -5,7 +5,7 @@ if( is_home() )
 elseif( is_draft() ) {
 	if( is_single() )
 		get_template_part( 'structure/content/publication' );
-	elseif(is_page())
+	elseif( is_page() )
 		get_template_part( 'structure/content/page' );
 }	// end elseif
 elseif( is_single() )

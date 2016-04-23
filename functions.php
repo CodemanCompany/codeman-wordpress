@@ -13,6 +13,23 @@ function codeman_wp_title( $title, $sep ) {
 	return $title;
 }	// end function
 
+function get_categories_codeman() {
+	$categories = [];
+
+	foreach( get_categories( [ 'hide_empty' => false ] ) as $key => $category ) {
+		$categories[] = ( object ) [
+				'index'	=>	$key,
+				'name'	=>	$category -> name,
+				'posts'	=>	$category -> category_count,
+				'slug'	=>	$category -> slug,
+				'url'	=>	get_category_link( $category -> cat_ID )
+		];
+	}	// end foreach
+	unset( $key, $category );
+
+	return $categories;
+}	// end function
+
 function get_config( $params = NULL ) {
 	$is_singular = is_singular();
 	return [
@@ -123,7 +140,8 @@ function get_publications( $query = NULL ) {
 			'image'		=>	current( get_attached_media( 'image', $post -> ID ) ) -> guid,
 			'modified'	=>	$post -> post_modified,
 			'status'	=>	$post -> post_status,
-			'tags'		=>	get_the_tags( $post -> ID ),
+			// 'tags'		=>	get_the_tags( $post -> ID ),
+			'tags'		=>	get_tags_codeman( $post -> ID ),
 			'title'		=>	$post -> post_title,
 			'url'		=>	get_permalink( $post -> ID )
 		];
@@ -175,6 +193,21 @@ function get_search( $echo = TRUE ) {
 		return htmlentities( $_GET[ 's' ] );
 
 	echo htmlentities( $_GET[ 's' ] );
+}	// end function
+
+function get_tags_codeman( $id = NULL ) {
+	$tags = [];
+	
+	foreach( get_the_tags( $id ) as $key => $tag ) {
+		$tags[] = ( object ) [
+			'index'	=>	$key,
+			'name'	=>	$tag -> name,
+			'slug'	=>	$tag -> slug,
+		];
+	}	// end foreach
+	unset( $key, $tag );
+
+	return $tags;
 }	// end function
 
 function get_url( $echo = TRUE ) {

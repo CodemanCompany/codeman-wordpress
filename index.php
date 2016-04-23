@@ -3,9 +3,6 @@
 	<head>
 		<title><?php wp_title( '|', true, 'right' );?></title>
 
-		<meta charset="<?php bloginfo( 'charset' );?>" />
-		<meta name="description" content="<?php is_single() ? single_post_title( '', true ) : bloginfo( 'description' );?>" />
-
 		<?php get_template_part( 'structure/head' );?>
 	</head>
 

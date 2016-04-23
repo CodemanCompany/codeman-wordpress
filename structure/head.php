@@ -1,4 +1,15 @@
+<meta charset="<?php bloginfo( 'charset' );?>" />
+<meta name="description" content="<?php is_single() ? single_post_title( '', true ) : bloginfo( 'description' );?>" />
 <meta content="width=device-width, initial-scale=1" name="viewport" />
+
+<!-- The Open Graph protocol -->
+<?php if( is_single() ):?>
+<meta property="og:image" content="<?php get_image();?>" />
+<meta property="og:title" content="<?php the_title();?>" />
+<?php endif;?>
+<!-- <meta property="og:title" content="The Rock" />
+<meta property="og:type" content="video.movie" />
+<meta property="og:url" content="http://www.imdb.com/title/tt0117500/" /> -->
 
 <!-- <link href="<?php bloginfo( 'stylesheet_url' );?>" rel="stylesheet" /> -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet" />
