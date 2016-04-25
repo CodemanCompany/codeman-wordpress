@@ -19,17 +19,23 @@
 			}	// end catch
 		?>
 
-		<article class="col-xs-4 card" data-ng-repeat="post in posts" data-ng-click="go( post.url )">
+		<article class="article" data-ng-repeat="post in posts" data-ng-click="go( post.url )">
 			<div class="content">
-				<div class="card-image">
+				<div class="article-image">
 					<img class="img-responsive" data-ng-src="{{post.image}}" alt="" />
 				</div>
-				<span class="category"><a href="{{post.category.url}}">{{post.category.name}}</a></span>
-				<div class="card-content">
-					<h2><a href="{{post.url}}">{{post.title}}</a></h2>
+				<span class="category"><a href="{{post.category[ 0 ].url}}">{{post.category[ 0 ].name}}</a></span>
+				<div class="article-content">
+					<h2><a href="{{post.url}}" data-ng-bind-html="post.title"></a></h2>
 					<div data-ng-bind-html="post.content"></div>
 					<br />
-					<div><a class="shared" href="#">COMPARTIR</a></div>
+					<div class="social-networks">
+						<a href="#" data-ng-click="share( $event, { media: post.image, content: post.title }, post.url, 'facebook' )"><span class="fa fa-facebook"></span></a>
+						<a href="#" data-ng-click="share( $event, { content: post.title }, post.url, 'twitter' )"><span class="fa fa-twitter"></span></a>
+						<a href="#" data-ng-click="share( $event, { media: post.image, content: post.title }, post.url, 'pinterest' )"><span class="fa fa-pinterest"></span></a>
+						<a href="#" data-ng-click="share( $event, { content: post.title }, post.url, 'google-plus' )"><span class="fa fa-google-plus"></span></a>
+						<a class="hidden-lg hidden-md hidden-sm" href="#" data-action="share/whatsapp/share" data-ng-click="share( $event, { content: post.title }, post.url, 'whatsapp' )"><span class="fa fa-whatsapp"></span></a>
+					</div>
 				</div>
 			</div>
 		</article>

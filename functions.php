@@ -197,8 +197,10 @@ function get_search( $echo = TRUE ) {
 
 function get_tags_codeman( $id = NULL ) {
 	$tags = [];
+	$data = get_the_tags( $id );
+	$data = ! $data ? [] : $data;
 	
-	foreach( get_the_tags( $id ) as $key => $tag ) {
+	foreach( $data as $key => $tag ) {
 		$tags[] = ( object ) [
 			'index'	=>	$key,
 			'name'	=>	$tag -> name,
@@ -219,6 +221,21 @@ function get_url( $echo = TRUE ) {
 
 function image_dir() {
 	echo get_template_directory_uri() .'/img';
+}	// end function
+
+function is( $type = NULL ) {
+	$uri = $_SERVER[ 'REQUEST_URI' ];
+
+	if( $type === 'category' )
+		return strpos( $uri, $type ) !== false;
+	elseif( $type === 'home' )
+		return $uri === '/';
+	elseif( $type === 'page' )
+		return is_page();
+	elseif( $type === 'post' )
+		return substr_count( $uri, '/' ) === 5;
+
+	return false;
 }	// end function
 
 function is_draft() {

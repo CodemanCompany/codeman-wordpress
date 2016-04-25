@@ -7,9 +7,6 @@
 <meta property="og:image" content="<?php get_image();?>" />
 <meta property="og:title" content="<?php the_title();?>" />
 <?php endif;?>
-<!-- <meta property="og:title" content="The Rock" />
-<meta property="og:type" content="video.movie" />
-<meta property="og:url" content="http://www.imdb.com/title/tt0117500/" /> -->
 
 <!-- <link href="<?php bloginfo( 'stylesheet_url' );?>" rel="stylesheet" /> -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet" />

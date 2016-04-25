@@ -9,6 +9,7 @@ function MainController( $scope, request, validate ) {
 	var data = {
 		"action":	'load_more',
 		"page":		1
+		// "page":		2
 	};
 
 	$scope.loadMore = function( category ) {
