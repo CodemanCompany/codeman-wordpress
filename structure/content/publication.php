@@ -34,7 +34,10 @@
 			<?php
 				$gallery = get_gallery();
 				var_dump( $gallery );
-			?>
+				if( $gallery ):
+					foreach( $gallery -> images as $image ):?>
+						<aside></aside>
+				<?php endforeach; unset( $image ); endif;?>
 			</pre>
 
 			<?php get_jwplayer( '7ZGeGJG7' );?>
@@ -49,3 +52,5 @@
 		</aside>
 	</div>
 </div>
+
+<script>var gallery = document.querySelector( '.gallery' ); if( gallery ) gallery.hidden = true;</script>

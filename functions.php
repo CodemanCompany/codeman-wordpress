@@ -125,16 +125,18 @@ function get_publications( $query = NULL ) {
 	$posts = [];
 
 	foreach( $query as $key => $post ) {
-		$category = get_the_category( $post -> ID )[ 0 ];
+		// $category = get_the_category( $post -> ID )[ 0 ];
 		$store = ( object ) [
 			'category'	=>	get_data( 'category', $post -> ID ),
 			'content'	=>	strstr( $post -> post_content, '<!--more-->', true ),
+			'cover'		=>	wp_get_attachment_image_src( get_post_thumbnail_id( $post -> ID ), 'full' )[ 0 ],
 			'custom'	=>	[],
 			'date'		=>	get_the_date( '', $post -> ID ),
 			'field'		=>	( object ) [
 				'audio'		=>	get_custom( [ 'id' => $post -> ID, 'key' => 'audio' ] ),
 				'video'		=>	get_custom( [ 'id' => $post -> ID, 'key' => 'video' ] )
 			],
+			'format'	=>	get_post_format( $post -> ID ) ? : 'standard',
 			'id'		=>	$post -> ID,
 			'index'		=>	$key,
 			'image'		=>	current( get_attached_media( 'image', $post -> ID ) ) -> guid,
@@ -314,3 +316,6 @@ add_action( 'wp_ajax_nopriv_load_more', 'load_more' );
 
 add_filter( 'wp_page_menu_args', 'my_page_menu_args' );
 add_filter( 'wp_title', 'codeman_wp_title', 10, 2 );
+
+add_theme_support( 'post-formats' );
+add_theme_support( 'post-thumbnails' );
