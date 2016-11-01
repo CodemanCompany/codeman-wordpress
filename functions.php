@@ -101,7 +101,7 @@ function get_gallery() {
 }	// end function
 
 function get_image( $echo = TRUE ) {
-	$image = current( get_attached_media( 'image' ) ) -> guid;
+	$image = wp_get_attachment_image_src( get_post_thumbnail_id( get_the_ID() ), 'full' )[ 0 ];
 
 	if( ! $echo )
 		return $image;
@@ -118,6 +118,13 @@ function get_location( $echo = TRUE ) {
 	echo $location;
 }	// end function
 
+function get_open_graph() {
+	if( is_single() )
+		return get_publications( [ 'p' => get_the_ID() ] ) -> data[ 0 ];
+
+	return false;
+}	// end function
+
 function get_publications( $query = NULL ) {
 	if( is_null( $query ) || ! is_array( $query = query_posts( $query ) ) )
 		throw new Exception( 'The query is wrong.' );
@@ -128,8 +135,7 @@ function get_publications( $query = NULL ) {
 		// $category = get_the_category( $post -> ID )[ 0 ];
 		$store = ( object ) [
 			'category'	=>	get_data( 'category', $post -> ID ),
-			'content'	=>	strstr( $post -> post_content, '<!--more-->', true ),
-			'cover'		=>	wp_get_attachment_image_src( get_post_thumbnail_id( $post -> ID ), 'full' )[ 0 ],
+			'content'	=>	strip_tags( trim( strstr( $post -> post_content, '<!--more-->', true ) ) ),
 			'custom'	=>	[],
 			'date'		=>	get_the_date( '', $post -> ID ),
 			'field'		=>	( object ) [
@@ -139,7 +145,8 @@ function get_publications( $query = NULL ) {
 			'format'	=>	get_post_format( $post -> ID ) ? : 'standard',
 			'id'		=>	$post -> ID,
 			'index'		=>	$key,
-			'image'		=>	current( get_attached_media( 'image', $post -> ID ) ) -> guid,
+			// 'image'		=>	current( get_attached_media( 'image', $post -> ID ) ) -> guid,
+			'image'		=>	wp_get_attachment_image_src( get_post_thumbnail_id( $post -> ID ), 'full' )[ 0 ],
 			'modified'	=>	$post -> post_modified,
 			'status'	=>	$post -> post_status,
 			// 'tags'		=>	get_the_tags( $post -> ID ),
@@ -317,5 +324,5 @@ add_action( 'wp_ajax_nopriv_load_more', 'load_more' );
 add_filter( 'wp_page_menu_args', 'my_page_menu_args' );
 add_filter( 'wp_title', 'codeman_wp_title', 10, 2 );
 
-add_theme_support( 'post-formats' );
+add_theme_support( 'post-formats', [ 'gallery' ] );
 add_theme_support( 'post-thumbnails' );

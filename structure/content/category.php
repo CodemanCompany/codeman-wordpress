@@ -5,7 +5,7 @@
 		<article class="col-xs-9">
 			<?php if( have_posts() ): while( have_posts() ): the_post();?>
 
-			<img class="img-responsive" src="<?php get_image( $post -> ID );?>" alt="" />
+			<img class="img-responsive" src="<?php get_image();?>" alt="" />
 			<h2><?php the_title();?></h2>
 			<p><span class="text-muted"><?php the_date();?></span></p>
 			<p><?php the_content( '', FALSE, '' );?></p>
