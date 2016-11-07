@@ -13,6 +13,18 @@ function codeman_wp_title( $title, $sep ) {
 	return $title;
 }	// end function
 
+function get_best_category( $categories ) {;
+	if( count( $categories ) === 1 )
+		return $categories[ 0 ] -> slug;
+
+	foreach( ( array ) $categories as $category )
+		if( ! ( $category -> slug == 'carousel' || $category -> slug == 'sin-categoria' ) )
+			return $category -> slug;
+
+	return false;
+	unset( $category );
+}	// end function
+
 function get_categories_codeman() {
 	$categories = [];
 
@@ -134,7 +146,7 @@ function get_publications( $query = NULL ) {
 	foreach( $query as $key => $post ) {
 		// $category = get_the_category( $post -> ID )[ 0 ];
 		$store = ( object ) [
-			'category'	=>	get_data( 'category', $post -> ID ),
+			'categories'=>	get_data( 'category', $post -> ID ),
 			'content'	=>	strip_tags( trim( strstr( $post -> post_content, '<!--more-->', true ) ) ),
 			'custom'	=>	[],
 			'date'		=>	get_the_date( '', $post -> ID ),
@@ -154,6 +166,7 @@ function get_publications( $query = NULL ) {
 			'title'		=>	$post -> post_title,
 			'url'		=>	get_permalink( $post -> ID )
 		];
+		$store -> category = get_best_category( $store -> categories );
 
 		// filters
 		$store -> content = $store -> content ? $store -> content : 'It does not have a description.';
