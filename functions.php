@@ -181,6 +181,7 @@ function get_publications( $query = NULL ) {
 	];
 }	// end function
 
+// TODO: Add functionality
 function get_publications_for( $params = NULL ) {
 	if( is_null( $params ) )
 		throw new Exception( 'The parameters are not correct.' );
@@ -241,6 +242,30 @@ function get_url( $echo = TRUE ) {
 	echo get_permalink();
 }	// end function
 
+function instagram() {
+	$output = [
+		'message'	=>	'Bad request',
+		'result'	=>	'error'
+	];
+
+	if( $_SERVER[ 'REQUEST_METHOD' ] === 'GET' ) {
+		define( 'INSTAGRAM_COUNT', 10 );
+		define( 'INSTAGRAM_TOKEN', '261855798.b76c2f2.bc12d74f45a646049ef6a6dbad721e10' );
+
+		$handler = curl_init();
+		$url = 'https://api.instagram.com/v1/users/self/media/recent?access_token=' . INSTAGRAM_TOKEN . '&count=' . INSTAGRAM_COUNT;
+		curl_setopt( $handler, CURLOPT_URL, $url );
+		curl_setopt( $handler, CURLOPT_RETURNTRANSFER, 1 );
+
+		$output = curl_exec( $handler ); 
+		curl_close( $handler );
+	}	// end if
+
+	header( 'Content-Type: application/json' );
+	echo json_encode( $output );
+	exit;
+}	// end function
+
 function image_dir() {
 	echo get_template_directory_uri() .'/img';
 }	// end function
@@ -265,7 +290,7 @@ function is_draft() {
 }	// end function
 
 function load_more() {
-	$store = [
+	$output = [
 		'message'	=>	'Bad request',
 		'result'	=>	'error'
 	];
@@ -283,7 +308,7 @@ function load_more() {
 			'posts_per_page'	=>	POSTS_PER_PAGE
 		] ) );
 
-		$store = [
+		$output = [
 			'data'	=>	$data -> data,
 			'result'=>	'success',
 			'rows'	=>	$data -> rows,
@@ -292,7 +317,7 @@ function load_more() {
 	}	// end if
 
 	header( 'Content-Type: application/json' );
-	echo json_encode( $store );
+	echo json_encode( $output );
 	exit;
 }	// end function
 
@@ -331,6 +356,8 @@ function send_smtp_email( $phpmailer ) {
 
 add_action( 'phpmailer_init', 'send_smtp_email' );
 add_action( 'pre_get_posts', 'my_post_queries' );
+add_action( 'wp_ajax_instagram', 'instagram' );
+add_action( 'wp_ajax_nopriv_instagram', 'instagram' );
 add_action( 'wp_ajax_load_more', 'load_more' );
 add_action( 'wp_ajax_nopriv_load_more', 'load_more' );
 

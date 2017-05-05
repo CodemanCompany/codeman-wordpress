@@ -1,20 +1,28 @@
 <?php
 
-if( is_home() )
+define( 'IS_CATEGORY', is_category() );
+define( 'IS_DRAFT', is_draft() );
+define( 'IS_HOME', is_home() );
+define( 'IS_MOBILE', wp_is_mobile() );
+define( 'IS_PAGE', is_page() );
+define( 'IS_SEARCH', is_search() );
+define( 'IS_SINGLE', is_single() );
+
+if( IS_HOME )
 	get_template_part( 'structure/content/home' );
-elseif( is_draft() ) {
-	if( is_single() )
+elseif( IS_DRAFT ) {
+	if( IS_SINGLE )
 		get_template_part( 'structure/content/publication' );
-	elseif( is_page() )
+	elseif( IS_PAGE )
 		get_template_part( 'structure/content/page' );
 }	// end elseif
-elseif( is_single() )
+elseif( IS_SINGLE )
 	get_template_part( 'structure/content/publication' );
-elseif( is_category() )
+elseif( IS_CATEGORY )
 	get_template_part( 'structure/content/category' );
-elseif( is_search() )
+elseif( IS_SEARCH )
 	get_template_part( 'structure/content/search' );
-elseif( is_page() ) {
+elseif( IS_PAGE ) {
 	if( is_page( 'contact' ) )
 		get_template_part( 'structure/content/contact' );
 	elseif( is_page( 'privacy' ) )
