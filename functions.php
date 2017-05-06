@@ -166,6 +166,7 @@ function get_publications( $query = NULL ) {
 			'title'		=>	$post -> post_title,
 			'url'		=>	get_permalink( $post -> ID )
 		];
+		// TODO: Remove
 		$store -> category = get_best_category( $store -> categories );
 
 		// filters
@@ -182,6 +183,10 @@ function get_publications( $query = NULL ) {
 }	// end function
 
 // TODO: Add functionality
+// 1. Search by Tag
+// 1.1 multiple tags
+// 2. Search by Tag and category
+// 3. Search by Categories
 function get_publications_for( $params = NULL ) {
 	if( is_null( $params ) )
 		throw new Exception( 'The parameters are not correct.' );
@@ -250,7 +255,7 @@ function instagram() {
 
 	if( $_SERVER[ 'REQUEST_METHOD' ] === 'GET' ) {
 		define( 'INSTAGRAM_COUNT', 10 );
-		define( 'INSTAGRAM_TOKEN', '261855798.b76c2f2.bc12d74f45a646049ef6a6dbad721e10' );
+		define( 'INSTAGRAM_TOKEN', '' );
 
 		$handler = curl_init();
 		$url = 'https://api.instagram.com/v1/users/self/media/recent?access_token=' . INSTAGRAM_TOKEN . '&count=' . INSTAGRAM_COUNT;
