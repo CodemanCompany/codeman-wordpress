@@ -1,7 +1,10 @@
 <?php
 
+// Config
 define( 'POSTS_PER_PAGE', 15 );
 define( 'POSTS_PER_SIDEBAR', 6 );
+define( 'INSTAGRAM_COUNT', 10 );
+define( 'INSTAGRAM_TOKEN', '' );
 
 function codeman_wp_title( $title, $sep ) {
 	$title .= get_bloginfo( 'name', 'display' );
@@ -45,11 +48,13 @@ function get_categories_codeman() {
 function get_config( $params = NULL ) {
 	$is_singular = is_singular();
 	return [
+		// TODO: explain
 		'category_name'		=>	isset( $params[ 'category_name' ] ) ? $params[ 'category_name' ] : ( $is_singular ? get_data( 'category' )[ 0 ] -> slug : NULL ),
 		'paged'				=>	isset( $params[ 'paged' ] ) ? $params[ 'paged' ] : 1,
 		'post__not_in'		=>	$is_singular ? [ get_the_ID() ] : NULL,
 		'post_status'		=>	'publish',
-		'posts_per_page'	=>	isset( $params[ 'posts_per_page' ] ) ? $params[ 'posts_per_page' ] : POSTS_PER_PAGE
+		'posts_per_page'	=>	isset( $params[ 'posts_per_page' ] ) ? $params[ 'posts_per_page' ] : POSTS_PER_PAGE,
+		'tag'				=>	isset( $params[ 'tag' ] ) ? $params[ 'tag' ] : NULL,
 	];
 }	// end function
 
@@ -146,6 +151,8 @@ function get_publications( $query = NULL ) {
 	foreach( $query as $key => $post ) {
 		// $category = get_the_category( $post -> ID )[ 0 ];
 		$store = ( object ) [
+			// TODO: Check
+			// 'author'	=>	get_the_author(1),
 			'categories'=>	get_data( 'category', $post -> ID ),
 			'content'	=>	strip_tags( trim( strstr( $post -> post_content, '<!--more-->', true ) ) ),
 			'custom'	=>	[],
@@ -164,7 +171,7 @@ function get_publications( $query = NULL ) {
 			// 'tags'		=>	get_the_tags( $post -> ID ),
 			'tags'		=>	get_tags_codeman( $post -> ID ),
 			'title'		=>	$post -> post_title,
-			'url'		=>	get_permalink( $post -> ID )
+			'url'		=>	get_permalink( $post -> ID ),
 		];
 		// TODO: Remove
 		$store -> category = get_best_category( $store -> categories );
@@ -183,10 +190,10 @@ function get_publications( $query = NULL ) {
 }	// end function
 
 // TODO: Add functionality
-// 1. Search by Tag
-// 1.1 multiple tags
-// 2. Search by Tag and category
-// 3. Search by Categories
+// Ser mas restrictivo.
+// bien los padres
+// ver que pedo con el carousel
+// https://wordpress.stackexchange.com/questions/4201/how-to-query-posts-by-category-and-tag
 function get_publications_for( $params = NULL ) {
 	if( is_null( $params ) )
 		throw new Exception( 'The parameters are not correct.' );
@@ -198,17 +205,23 @@ function get_publications_for( $params = NULL ) {
 		else
 			throw new Exception( 'This section is not found.' );
 	}	// end elseif
-	elseif( isset( $params[ 'number' ] ) ) {
-		if( isset( $params[ 'category' ] ) )
-			return get_publications( get_config( [
-				'category_name'		=>	$params[ 'category' ],
-				'posts_per_page'	=>	$params[ 'number' ]
-			] ) );
-		else
-			return get_publications( get_config( [ 'posts_per_page' => $params[ 'number' ] ] ) );
-	}	// end elseif
+	elseif( isset( $params[ 'category' ] ) && isset( $params[ 'tag' ] ) ) {
+		return get_publications( get_config( [
+			'category_name' => $params[ 'category' ],
+			'posts_per_page'	=>	isset( $params[ 'number' ] ) ? $params[ 'number' ] : NULL,
+			'tag' => $params[ 'tag' ],
+		] ) );
+	}	// end else
 	elseif( isset( $params[ 'category' ] ) )
-		return get_publications( get_config( [ 'category_name' => $params[ 'category' ] ] ) );
+		return get_publications( get_config( [
+			'category_name' => $params[ 'category' ],
+			'posts_per_page'	=>	isset( $params[ 'number' ] ) ? $params[ 'number' ] : NULL,
+		] ) );
+	elseif( isset( $params[ 'tag' ] ) )
+		return get_publications( get_config( [
+			'posts_per_page'	=>	isset( $params[ 'number' ] ) ? $params[ 'number' ] : NULL,
+			'tag' => $params[ 'tag' ],
+		] ) );
 	else
 		throw new Exception( 'Not found.' );
 }	// end function
@@ -254,9 +267,6 @@ function instagram() {
 	];
 
 	if( $_SERVER[ 'REQUEST_METHOD' ] === 'GET' ) {
-		define( 'INSTAGRAM_COUNT', 10 );
-		define( 'INSTAGRAM_TOKEN', '' );
-
 		$handler = curl_init();
 		$url = 'https://api.instagram.com/v1/users/self/media/recent?access_token=' . INSTAGRAM_TOKEN . '&count=' . INSTAGRAM_COUNT;
 		curl_setopt( $handler, CURLOPT_URL, $url );
@@ -310,14 +320,14 @@ function load_more() {
 		$data = get_publications( get_config( [
 			'category_name'		=>	$_GET[ 'category' ],
 			'paged'				=>	$_GET[ 'page' ],
-			'posts_per_page'	=>	POSTS_PER_PAGE
+			'posts_per_page'	=>	POSTS_PER_PAGE,
 		] ) );
 
 		$output = [
 			'data'	=>	$data -> data,
 			'result'=>	'success',
 			'rows'	=>	$data -> rows,
-			'total'	=>	intval( wp_count_posts() -> publish )
+			'total'	=>	intval( wp_count_posts() -> publish ),
 		];
 	}	// end if
 
