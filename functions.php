@@ -1,4 +1,10 @@
 <?php
+// Print Codeman
+
+// Task
+// 1. listar las categorias y ver sus URL'S
+// 2. Hacer un autocompletado por nombre
+// 3. Ver que onda con ese plugin
 
 // Config
 define( 'POSTS_PER_PAGE', 15 );
