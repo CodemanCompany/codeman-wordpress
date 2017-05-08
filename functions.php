@@ -1,10 +1,10 @@
 <?php
-// Print Codeman
-
-// Task
-// 1. listar las categorias y ver sus URL'S
-// 2. Hacer un autocompletado por nombre
-// 3. Ver que onda con ese plugin
+//  ██████╗ ██████╗ ██████╗ ███████╗███╗   ███╗ █████╗ ███╗   ██╗
+// ██╔════╝██╔═══██╗██╔══██╗██╔════╝████╗ ████║██╔══██╗████╗  ██║
+// ██║     ██║   ██║██║  ██║█████╗  ██╔████╔██║███████║██╔██╗ ██║
+// ██║     ██║   ██║██║  ██║██╔══╝  ██║╚██╔╝██║██╔══██║██║╚██╗██║
+// ╚██████╗╚██████╔╝██████╔╝███████╗██║ ╚═╝ ██║██║  ██║██║ ╚████║
+//  ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝
 
 // Config
 define( 'POSTS_PER_PAGE', 15 );
@@ -34,16 +34,30 @@ function get_best_category( $categories ) {;
 	unset( $category );
 }	// end function
 
-function get_categories_codeman() {
-	$categories = [];
+function get_subcategories( $slug = NULL ) {
+	if( is_null( $slug ) )
+		throw new Exception( 'Slug cannot be null.' );
 
-	foreach( get_categories( [ 'hide_empty' => false ] ) as $key => $category ) {
+	$categories = [];
+	$parent = is_int( $slug ) ? $slug : get_category_by_slug( $slug );
+
+	$params = [
+		'exclude'		=>	0,
+		'hide_empty'	=>	false,
+		'order'			=>	'ASC',
+		'orderby'		=>	'name',
+		'parent'		=>	is_int( $slug ) ? $slug : $parent -> term_id,
+	];
+
+	foreach( get_categories( $params ) as $key => $category ) {
 		$categories[] = ( object ) [
-				'index'	=>	$key,
-				'name'	=>	$category -> name,
-				'posts'	=>	$category -> category_count,
-				'slug'	=>	$category -> slug,
-				'url'	=>	get_category_link( $category -> cat_ID )
+			'count'	=>	$category -> count,
+			'id'	=>	$category -> term_id,
+			'index'	=>	$key,
+			'name'	=>	$category -> name,
+			'parent'=>	$category -> category_parent,
+			'slug'	=>	$category -> slug,
+			'url'	=>	get_category_link( $category -> cat_ID ),
 		];
 	}	// end foreach
 	unset( $key, $category );
@@ -60,6 +74,7 @@ function get_config( $params = NULL ) {
 		'post__not_in'		=>	$is_singular ? [ get_the_ID() ] : NULL,
 		'post_status'		=>	'publish',
 		'posts_per_page'	=>	isset( $params[ 'posts_per_page' ] ) ? $params[ 'posts_per_page' ] : POSTS_PER_PAGE,
+		's'					=>	isset( $params[ 's' ] ) ?  $params[ 's' ] : NULL,
 		'tag'				=>	isset( $params[ 'tag' ] ) ? $params[ 'tag' ] : NULL,
 	];
 }	// end function
@@ -78,10 +93,12 @@ function get_data( $type = NULL, $id = NULL ) {
 		$categories = [];
 		foreach( get_the_category( $id ) as $key => $category ) {
 			$categories[] = ( object ) [
+				'id'	=>	$category -> term_id,
 				'index'	=>	$key,
 				'name'	=>	$category -> name,
+				'parent'=>	$category -> category_parent,
 				'slug'	=>	$category -> slug,
-				'url'	=>	get_category_link( $category -> cat_ID )
+				'url'	=>	get_category_link( $category -> cat_ID ),
 			];
 		}	// end foreach
 		unset( $key, $category );
@@ -115,7 +132,7 @@ function get_gallery() {
 		$value = ( object ) [
 			'description'	=>	get_post( $gallery -> ids[ $key ] ) -> post_excerpt,
 			'index'			=>	$key,
-			'src'			=>	$value
+			'src'			=>	$value,
 		];
 	}	// end foreach
 	unset( $key, $value, $gallery -> ids );
@@ -191,15 +208,12 @@ function get_publications( $query = NULL ) {
 
 	return ( object ) [
 		'data'	=>	$posts,
-		'rows'	=>	count( $posts )
+		'rows'	=>	count( $posts ),
 	];
 }	// end function
 
 // TODO: Add functionality
-// Ser mas restrictivo.
-// bien los padres
-// ver que pedo con el carousel
-// https://wordpress.stackexchange.com/questions/4201/how-to-query-posts-by-category-and-tag
+// 1. Restrictions
 function get_publications_for( $params = NULL ) {
 	if( is_null( $params ) )
 		throw new Exception( 'The parameters are not correct.' );
@@ -214,19 +228,26 @@ function get_publications_for( $params = NULL ) {
 	elseif( isset( $params[ 'category' ] ) && isset( $params[ 'tag' ] ) ) {
 		return get_publications( get_config( [
 			'category_name' => $params[ 'category' ],
-			'posts_per_page'	=>	isset( $params[ 'number' ] ) ? $params[ 'number' ] : NULL,
+			'posts_per_page' => isset( $params[ 'number' ] ) ? $params[ 'number' ] : NULL,
+			's'	=>	isset( $params[ 'search' ] ) ? $params[ 'search' ] : NULL,
 			'tag' => $params[ 'tag' ],
 		] ) );
 	}	// end else
 	elseif( isset( $params[ 'category' ] ) )
 		return get_publications( get_config( [
 			'category_name' => $params[ 'category' ],
-			'posts_per_page'	=>	isset( $params[ 'number' ] ) ? $params[ 'number' ] : NULL,
+			'posts_per_page' => isset( $params[ 'number' ] ) ? $params[ 'number' ] : NULL,
+			's' => isset( $params[ 'search' ] ) ? $params[ 'search' ] : NULL,
 		] ) );
 	elseif( isset( $params[ 'tag' ] ) )
 		return get_publications( get_config( [
-			'posts_per_page'	=>	isset( $params[ 'number' ] ) ? $params[ 'number' ] : NULL,
+			'posts_per_page' => isset( $params[ 'number' ] ) ? $params[ 'number' ] : NULL,
+			's' => isset( $params[ 'search' ] ) ? $params[ 'search' ] : NULL,
 			'tag' => $params[ 'tag' ],
+		] ) );
+	elseif( isset( $params[ 'search' ] ) )
+		return get_publications( get_config( [
+			's' => isset( $params[ 'search' ] ) ? $params[ 'search' ] : NULL,
 		] ) );
 	else
 		throw new Exception( 'Not found.' );

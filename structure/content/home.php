@@ -1,8 +1,10 @@
 <section class="container">
 	<div class="row">
+		<a data-fancybox="gallery" href="https://farm6.staticflickr.com/5519/9432166677_aefe32aad4_k_d.jpg"><img src="https://farm6.staticflickr.com/5519/9432166677_aefe32aad4_k_d.jpg"></a>
+<a data-fancybox="gallery" href="https://farm6.staticflickr.com/5519/9432166677_aefe32aad4_k_d.jpg"><img src="https://farm6.staticflickr.com/5519/9432166677_aefe32aad4_k_d.jpg"></a>
 		<?php
 			try {
-				foreach( get_publications_for( [ 'category' => 'test2,subtest2', 'number' => 1 ] ) -> data as $article ):?>
+				foreach( get_publications_for( [ 'section' => 'home' ] ) -> data as $article ):?>
 					<pre><?php var_dump( $article );?></pre>
 					<div class="social-network">
 						<a href="#" data-ng-click="share( $event, { content: '<?php echo $article -> content;?>' }, '<?php echo $article -> url;?>', 'facebook' )"><span class="fa fa-facebook"></span></a>
