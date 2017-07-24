@@ -221,7 +221,7 @@ function get_publications( $query = NULL ) {
 	foreach( $query as $key => $post ) {
 		$store = ( object ) [
 			// TODO: Check
-			// 'author'	=>	get_the_author(1),
+			// 'author'	=>	get_the_author( 1 ),
 			'categories'=>	get_data( 'category', $post -> ID ),
 			'content'	=>	strip_tags( trim( strstr( $post -> post_content, '<!--more-->', true ) ) ),
 			'custom'	=>	[],

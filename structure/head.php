@@ -10,7 +10,7 @@
 	<meta property="og:image" content="<?php echo $og -> image;?>" />
 	<meta property="og:title" content="<?php echo $og -> title;?>" />
 	<meta property="og:url" content="<?php echo $og -> url;?>" />
-<?php elseif( is_category() ):?>
+<?php elseif( IS_CATEGORY ):?>
 	<meta property="og:description" content="<?php bloginfo( 'description' );?>" />
 	<meta property="og:image" content="" />
 	<meta property="og:title" content="<?php single_cat_title( '', true );?>" />
