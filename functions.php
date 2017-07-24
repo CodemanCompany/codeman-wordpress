@@ -22,6 +22,7 @@ define( 'POSTS_PER_PAGE', 15 );
 define( 'POSTS_PER_SIDEBAR', 6 );
 define( 'INSTAGRAM_COUNT', 10 );
 define( 'INSTAGRAM_TOKEN', '' );
+define( 'MAPS_KEY', '' );
 
 function codeman_wp_title( $title, $sep ) {
 	$title .= get_bloginfo( 'name', 'display' );
@@ -32,6 +33,8 @@ function codeman_wp_title( $title, $sep ) {
 
 	return $title;
 }	// end function
+
+// TODO: get_address()
 
 function get_best_category( $categories ) {;
 	if( count( $categories ) === 1 )
@@ -87,15 +90,39 @@ function get_subcategories( $slug = NULL ) {
 
 function get_config( $params = NULL ) {
 	$is_singular = is_singular();
+
+	if( isset( $params[ 'category__and' ] ) ) {
+		$categories = explode( ',', $params[ 'category__and' ] );
+
+		$ids = [];
+		foreach( $categories as $category ) {
+			$cat = get_category_by_slug( $category );
+			$ids[] = $cat -> term_id;
+		}	// end foreach
+		unset( $category );
+	}	// end if
+
 	return [
-		// TODO: explain
-		'category_name'		=>	isset( $params[ 'category_name' ] ) ? $params[ 'category_name' ] : ( $is_singular ? get_data( 'category' )[ 0 ] -> slug : NULL ),
-		'paged'				=>	isset( $params[ 'paged' ] ) ? $params[ 'paged' ] : 1,
+		'category__and'		=>	$ids ?? NULL,
+		'category_name'		=>	$params[ 'category_name' ] ?? NULL,
+		'orderby'			=>	$params[ 'orderby' ] ?? NULL,
+		'order'				=>	$params[ 'order' ] ?? NULL,
+		'paged'				=>	$params[ 'paged' ] ?? 1,
 		'post__not_in'		=>	$is_singular ? [ get_the_ID() ] : NULL,
 		'post_status'		=>	'publish',
-		'posts_per_page'	=>	isset( $params[ 'posts_per_page' ] ) ? $params[ 'posts_per_page' ] : POSTS_PER_PAGE,
-		's'					=>	isset( $params[ 's' ] ) ?  $params[ 's' ] : NULL,
-		'tag'				=>	isset( $params[ 'tag' ] ) ? $params[ 'tag' ] : NULL,
+		'posts_per_page'	=>	$params[ 'posts_per_page' ] ?? POSTS_PER_PAGE,
+		's'					=>	$params[ 's' ] ?? NULL,
+		'tag'				=>	$params[ 'tag' ] ?? NULL,
+		'tax_query'	=>	isset( $params[ 'googlemaps' ] ) ? [
+			'relation'	=>	'AND',
+			[
+				'taxonomy'	=>	'googlemaps',
+				'field'		=>	'slug',
+				'include_children'	=>	false,
+				'terms'		=>	$params[ 'googlemaps' ],
+				// 'operator'	=>	'IN',
+			],
+		] : NULL,
 	];
 }	// end function
 
@@ -192,7 +219,6 @@ function get_publications( $query = NULL ) {
 	$posts = [];
 
 	foreach( $query as $key => $post ) {
-		// $category = get_the_category( $post -> ID )[ 0 ];
 		$store = ( object ) [
 			// TODO: Check
 			// 'author'	=>	get_the_author(1),
@@ -223,7 +249,7 @@ function get_publications( $query = NULL ) {
 			'title'		=>	$post -> post_title,
 			'url'		=>	get_permalink( $post -> ID ),
 		];
-		// TODO: Remove
+		// TODO: Check Remove
 		$store -> category = get_best_category( $store -> categories );
 
 		// filters
@@ -239,8 +265,6 @@ function get_publications( $query = NULL ) {
 	];
 }	// end function
 
-// TODO: Add functionality
-// 1. Restrictions
 function get_publications_for( $params = NULL ) {
 	if( is_null( $params ) )
 		throw new Exception( 'The parameters are not correct.' );
@@ -252,30 +276,8 @@ function get_publications_for( $params = NULL ) {
 		else
 			throw new Exception( 'This section is not found.' );
 	}	// end elseif
-	elseif( isset( $params[ 'category' ] ) && isset( $params[ 'tag' ] ) ) {
-		return get_publications( get_config( [
-			'category_name' => $params[ 'category' ],
-			'posts_per_page' => isset( $params[ 'number' ] ) ? $params[ 'number' ] : NULL,
-			's'	=>	isset( $params[ 'search' ] ) ? $params[ 'search' ] : NULL,
-			'tag' => $params[ 'tag' ],
-		] ) );
-	}	// end else
-	elseif( isset( $params[ 'category' ] ) )
-		return get_publications( get_config( [
-			'category_name' => $params[ 'category' ],
-			'posts_per_page' => isset( $params[ 'number' ] ) ? $params[ 'number' ] : NULL,
-			's' => isset( $params[ 'search' ] ) ? $params[ 'search' ] : NULL,
-		] ) );
-	elseif( isset( $params[ 'tag' ] ) )
-		return get_publications( get_config( [
-			'posts_per_page' => isset( $params[ 'number' ] ) ? $params[ 'number' ] : NULL,
-			's' => isset( $params[ 'search' ] ) ? $params[ 'search' ] : NULL,
-			'tag' => $params[ 'tag' ],
-		] ) );
-	elseif( isset( $params[ 'search' ] ) )
-		return get_publications( get_config( [
-			's' => isset( $params[ 'search' ] ) ? $params[ 'search' ] : NULL,
-		] ) );
+	elseif( isset( $params ) )
+		return get_publications( get_config( $params ) );
 	else
 		throw new Exception( 'Not found.' );
 }	// end function
@@ -377,22 +379,6 @@ function image_dir() {
 	echo get_template_directory_uri() .'/img';
 }	// end function
 
-// TODO: Remove
-function is( $type = NULL ) {
-	$uri = $_SERVER[ 'REQUEST_URI' ];
-
-	if( $type === 'category' )
-		return strpos( $uri, $type ) !== false;
-	elseif( $type === 'home' )
-		return $uri === '/';
-	elseif( $type === 'page' )
-		return is_page();
-	elseif( $type === 'post' )
-		return substr_count( $uri, '/' ) === 5;
-
-	return false;
-}	// end function
-
 function is_draft() {
 	return is_user_logged_in() && is_preview();
 }	// end function
@@ -410,7 +396,6 @@ function load_more() {
 		// $_GET[ 'page' ] > 1	&&
 		( ( $_GET[ 'page' ] - 1 ) * POSTS_PER_PAGE ) - wp_count_posts() -> publish < 0
 	) {
-		// PHP7
 		$categories = explode( ',', $_GET[ 'category' ] ?? NULL );
 
 		$ids = [];
@@ -450,12 +435,11 @@ function my_post_queries( $query ) {
 
 		// if( is_home() )
 		// 	$query -> set( 'posts_per_page', POSTS_PER_PAGE );
-
 		// elseif( is_category() )
 		// 	$query -> set( 'posts_per_page', POSTS_PER_PAGE );
-
 		// elseif( is_search() )
 		// 	$query -> set( 'posts_per_page', POSTS_PER_PAGE );
+
 		$query -> set( 'posts_per_page', POSTS_PER_PAGE );
 	}	// end if
 }	// end function
