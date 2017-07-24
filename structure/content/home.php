@@ -1,7 +1,7 @@
 <section class="container">
 	<div class="row">
 		<a data-fancybox="gallery" href="https://farm6.staticflickr.com/5519/9432166677_aefe32aad4_k_d.jpg"><img src="https://farm6.staticflickr.com/5519/9432166677_aefe32aad4_k_d.jpg"></a>
-<a data-fancybox="gallery" href="https://farm6.staticflickr.com/5519/9432166677_aefe32aad4_k_d.jpg"><img src="https://farm6.staticflickr.com/5519/9432166677_aefe32aad4_k_d.jpg"></a>
+		<a data-fancybox="gallery" href="https://farm6.staticflickr.com/5519/9432166677_aefe32aad4_k_d.jpg"><img src="https://farm6.staticflickr.com/5519/9432166677_aefe32aad4_k_d.jpg"></a>
 		<?php
 			try {
 				foreach( get_publications_for( [ 'section' => 'home' ] ) -> data as $article ):?>
@@ -24,7 +24,7 @@
 		<!-- <article class="article" data-ng-repeat="post in posts" data-ng-click="go( post.url )">
 			<div class="content">
 				<div class="article-image">
-					<img class="img-responsive" data-ng-src="{{post.image}}" alt="" />
+					<img class="img-responsive" data-ng-src="{{post.images.medium_large}}" alt="" />
 				</div>
 				<span class="category"><a href="{{post.category[ 0 ].url}}">{{post.category[ 0 ].name}}</a></span>
 				<div class="article-content">
@@ -32,9 +32,9 @@
 					<div data-ng-bind-html="post.content"></div>
 					<br />
 					<div class="social-networks">
-						<a href="#" data-ng-click="share( $event, { media: post.image, content: post.title }, post.url, 'facebook' )"><span class="fa fa-facebook"></span></a>
+						<a href="#" data-ng-click="share( $event, { media: post.images.medium_large, content: post.title }, post.url, 'facebook' )"><span class="fa fa-facebook"></span></a>
 						<a href="#" data-ng-click="share( $event, { content: post.title }, post.url, 'twitter' )"><span class="fa fa-twitter"></span></a>
-						<a href="#" data-ng-click="share( $event, { media: post.image, content: post.title }, post.url, 'pinterest' )"><span class="fa fa-pinterest"></span></a>
+						<a href="#" data-ng-click="share( $event, { media: post.images.medium_large, content: post.title }, post.url, 'pinterest' )"><span class="fa fa-pinterest"></span></a>
 						<a href="#" data-ng-click="share( $event, { content: post.title }, post.url, 'google-plus' )"><span class="fa fa-google-plus"></span></a>
 						<a class="hidden-lg hidden-md hidden-sm" href="#" data-action="share/whatsapp/share" data-ng-click="share( $event, { content: post.title }, post.url, 'whatsapp' )"><span class="fa fa-whatsapp"></span></a>
 					</div>

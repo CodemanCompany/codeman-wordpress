@@ -17,8 +17,8 @@
   "dependencies": {
     "jquery": "^3.2.1",
     "bootstrap": "^3.3.7",
-    "angular": "^1.6.4",
-    "angular-sanitize": "^1.6.4",
-    "fancybox": "^3.0.47"
+    "angular": "^1.6.5",
+    "angular-sanitize": "^1.6.5",
+    "fancybox": "^3.1.20"
   }
 }

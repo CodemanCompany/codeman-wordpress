@@ -6,6 +6,17 @@
 // ╚██████╗╚██████╔╝██████╔╝███████╗██║ ╚═╝ ██║██║  ██║██║ ╚████║
 //  ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝
 
+// Init
+// New Taxonomy
+$args = [
+	'hierarchical'		=>	true,
+	'query_var'			=>	true,
+	'rewrite'			=>	[ 'slug' => 'googlemaps' ],
+	'show_admin_column'	=>	true,
+	'show_ui'			=>	true,
+];
+register_taxonomy( 'googlemaps', array( 'geolocation' ), $args );
+
 // Config
 define( 'POSTS_PER_PAGE', 15 );
 define( 'POSTS_PER_SIDEBAR', 6 );
@@ -24,14 +35,23 @@ function codeman_wp_title( $title, $sep ) {
 
 function get_best_category( $categories ) {;
 	if( count( $categories ) === 1 )
-		return $categories[ 0 ] -> slug;
+		return ( object ) [
+			'name'	=>	$categories[ 0 ] -> name,
+			'slug'	=>	$categories[ 0 ] -> slug,
+		];
 
 	foreach( ( array ) $categories as $category )
-		if( ! ( $category -> slug == 'carousel' || $category -> slug == 'sin-categoria' ) )
-			return $category -> slug;
+		if( ! (
+			$category -> slug == 'carousel' ||
+			$category -> slug == 'sin-categoria'
+		) )
+			return ( object ) [
+				'name'	=>	$category -> name,
+				'slug'	=>	$category -> slug,
+			];
 
-	return false;
 	unset( $category );
+	return false;
 }	// end function
 
 function get_subcategories( $slug = NULL ) {
@@ -141,7 +161,7 @@ function get_gallery() {
 }	// end function
 
 function get_image( $echo = TRUE ) {
-	$image = wp_get_attachment_image_src( get_post_thumbnail_id( get_the_ID() ), 'full' )[ 0 ];
+	$image = wp_get_attachment_image_src( get_post_thumbnail_id( get_the_ID() ), 'medium_large' )[ 0 ];
 
 	if( ! $echo )
 		return $image;
@@ -182,17 +202,24 @@ function get_publications( $query = NULL ) {
 			'date'		=>	get_the_date( '', $post -> ID ),
 			'field'		=>	( object ) [
 				'audio'		=>	get_custom( [ 'id' => $post -> ID, 'key' => 'audio' ] ),
-				'video'		=>	get_custom( [ 'id' => $post -> ID, 'key' => 'video' ] )
+				'location'		=>	get_custom( [ 'id' => $post -> ID, 'key' => 'location' ] ),
+				'video'		=>	get_custom( [ 'id' => $post -> ID, 'key' => 'video' ] ),
 			],
 			'format'	=>	get_post_format( $post -> ID ) ? : 'standard',
 			'id'		=>	$post -> ID,
 			'index'		=>	$key,
-			// 'image'		=>	current( get_attached_media( 'image', $post -> ID ) ) -> guid,
-			'image'		=>	wp_get_attachment_image_src( get_post_thumbnail_id( $post -> ID ), 'full' )[ 0 ],
+			'images'		=>	( object ) [
+				'full'		=>	wp_get_attachment_image_src( get_post_thumbnail_id( $post -> ID ), 'full' )[ 0 ],
+				'large'		=>	wp_get_attachment_image_src( get_post_thumbnail_id( $post -> ID ), 'large' )[ 0 ],
+				'medium'	=>	wp_get_attachment_image_src( get_post_thumbnail_id( $post -> ID ), 'medium' )[ 0 ],
+				'medium_large'	=>	wp_get_attachment_image_src( get_post_thumbnail_id( $post -> ID ), 'medium_large' )[ 0 ],
+				'thumbnail'	=>	wp_get_attachment_image_src( get_post_thumbnail_id( $post -> ID ), 'thumbnail' )[ 0 ],
+			],
 			'modified'	=>	$post -> post_modified,
 			'status'	=>	$post -> post_status,
 			// 'tags'		=>	get_the_tags( $post -> ID ),
-			'tags'		=>	get_tags_codeman( $post -> ID ),
+			'tags'		=>	get_tags_codeman( $post -> ID, 'post_tag' ),
+			'googlemaps'	=>	get_tags_codeman( $post -> ID, 'googlemaps' ),
 			'title'		=>	$post -> post_title,
 			'url'		=>	get_permalink( $post -> ID ),
 		];
@@ -263,9 +290,47 @@ function get_search( $echo = TRUE ) {
 	echo htmlentities( $_GET[ 's' ] );
 }	// end function
 
-function get_tags_codeman( $id = NULL ) {
+function get_subterms( $slug = NULL, $taxonomy = NULL ) {
+	if( is_null( $slug ) )
+		throw new Exception( 'Slug cannot be null.' );
+	if( is_null( $taxonomy ) )
+		throw new Exception( 'Taxonomy cannot be null.' );
+
+	$terms = [];
+	$parent = is_int( $slug ) ? $slug : get_term_by( 'slug', $slug, $taxonomy );
+
+	$params = [
+		'exclude'		=>	0,
+		'hide_empty'	=>	false,
+		'order'			=>	'ASC',
+		'orderby'		=>	'name',
+		'parent'		=>	is_int( $slug ) ? $slug : $parent -> term_id,
+		'taxonomy'		=>	$taxonomy
+	];
+
+	foreach( get_terms( $params ) as $key => $category ) {
+		$terms[] = ( object ) [
+			'count'	=>	$category -> count,
+			'id'	=>	$category -> term_id,
+			'index'	=>	$key,
+			'name'	=>	$category -> name,
+			'parent'=>	$category -> category_parent,
+			'slug'	=>	$category -> slug,
+			'url'	=>	get_category_link( $category -> term_id ),
+		];
+	}	// end foreach
+	unset( $key, $category );
+
+	return $terms;
+}	// end function
+
+function get_tags_codeman( $id = NULL, $taxonomy = NULL ) {
 	$tags = [];
-	$data = get_the_tags( $id );
+	$data = wp_get_post_terms( $id, $taxonomy, [
+		'orderby'	=>	'parent',
+		'order'		=>	'ASC',
+		'fields'	=>	'all'
+	] );
 	$data = ! $data ? [] : $data;
 	
 	foreach( $data as $key => $tag ) {
@@ -312,6 +377,7 @@ function image_dir() {
 	echo get_template_directory_uri() .'/img';
 }	// end function
 
+// TODO: Remove
 function is( $type = NULL ) {
 	$uri = $_SERVER[ 'REQUEST_URI' ];
 
@@ -344,8 +410,18 @@ function load_more() {
 		// $_GET[ 'page' ] > 1	&&
 		( ( $_GET[ 'page' ] - 1 ) * POSTS_PER_PAGE ) - wp_count_posts() -> publish < 0
 	) {
+		// PHP7
+		$categories = explode( ',', $_GET[ 'category' ] ?? NULL );
+
+		$ids = [];
+		foreach( $categories as $category ) {
+			$cat = get_category_by_slug( $category );
+			$ids[] = $cat -> term_id;
+		}	// end foreach
+		unset( $category );
+
 		$data = get_publications( get_config( [
-			'category_name'		=>	$_GET[ 'category' ],
+			'category__and'		=>	$ids,
 			'paged'				=>	$_GET[ 'page' ],
 			'posts_per_page'	=>	POSTS_PER_PAGE,
 		] ) );

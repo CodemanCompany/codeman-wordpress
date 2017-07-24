@@ -1,13 +1,4 @@
 <?php
-
-define( 'IS_CATEGORY', is_category() );
-define( 'IS_DRAFT', is_draft() );
-define( 'IS_HOME', is_home() );
-define( 'IS_MOBILE', wp_is_mobile() );
-define( 'IS_PAGE', is_page() );
-define( 'IS_SEARCH', is_search() );
-define( 'IS_SINGLE', is_single() );
-
 if( IS_HOME )
 	get_template_part( 'structure/content/home' );
 elseif( IS_DRAFT ) {
