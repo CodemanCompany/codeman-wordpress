@@ -8,14 +8,15 @@
 
 // Init
 // New Taxonomy
-$args = [
+define( 'ARGS', [
 	'hierarchical'		=>	true,
 	'query_var'			=>	true,
 	'rewrite'			=>	[ 'slug' => 'googlemaps' ],
 	'show_admin_column'	=>	true,
 	'show_ui'			=>	true,
-];
-register_taxonomy( 'googlemaps', array( 'geolocation' ), $args );
+] );
+
+register_taxonomy( 'googlemaps', array( 'geolocation' ), ARGS );
 
 // Config
 define( 'POSTS_PER_PAGE', 15 );
@@ -24,7 +25,7 @@ define( 'INSTAGRAM_COUNT', 10 );
 define( 'INSTAGRAM_TOKEN', '' );
 define( 'MAPS_KEY', '' );
 
-function codeman_wp_title( $title, $sep ) {
+function codeman_wp_title( $title, $sep ): string {
 	$title .= get_bloginfo( 'name', 'display' );
 
 	$description = get_bloginfo( 'description', 'display' );
@@ -57,7 +58,7 @@ function get_best_category( $categories ) {;
 	return false;
 }	// end function
 
-function get_subcategories( $slug = NULL ) {
+function get_subcategories( string $slug = NULL ): array {
 	if( is_null( $slug ) )
 		throw new Exception( 'Slug cannot be null.' );
 
@@ -88,7 +89,7 @@ function get_subcategories( $slug = NULL ) {
 	return $categories;
 }	// end function
 
-function get_config( $params = NULL ) {
+function get_config( $params = NULL ): array {
 	$is_singular = is_singular();
 
 	if( isset( $params[ 'category__and' ] ) ) {
@@ -212,7 +213,7 @@ function get_open_graph() {
 	return false;
 }	// end function
 
-function get_publications( $query = NULL ) {
+function get_publications( $query = NULL ): object {
 	if( is_null( $query ) || ! is_array( $query = query_posts( $query ) ) )
 		throw new Exception( 'The query is wrong.' );
 
@@ -265,7 +266,7 @@ function get_publications( $query = NULL ) {
 	];
 }	// end function
 
-function get_publications_for( $params = NULL ) {
+function get_publications_for( $params = NULL ): object {
 	if( is_null( $params ) )
 		throw new Exception( 'The parameters are not correct.' );
 	elseif( isset( $params[ 'section' ] ) ) {
@@ -292,7 +293,7 @@ function get_search( $echo = TRUE ) {
 	echo htmlentities( $_GET[ 's' ] );
 }	// end function
 
-function get_subterms( $slug = NULL, $taxonomy = NULL ) {
+function get_subterms( $slug = NULL, $taxonomy = NULL ): array {
 	if( is_null( $slug ) )
 		throw new Exception( 'Slug cannot be null.' );
 	if( is_null( $taxonomy ) )
@@ -326,7 +327,7 @@ function get_subterms( $slug = NULL, $taxonomy = NULL ) {
 	return $terms;
 }	// end function
 
-function get_tags_codeman( $id = NULL, $taxonomy = NULL ) {
+function get_tags_codeman( $id = NULL, $taxonomy = NULL ): array {
 	$tags = [];
 	$data = wp_get_post_terms( $id, $taxonomy, [
 		'orderby'	=>	'parent',
@@ -379,7 +380,7 @@ function image_dir() {
 	echo get_template_directory_uri() .'/img';
 }	// end function
 
-function is_draft() {
+function is_draft(): bool {
 	return is_user_logged_in() && is_preview();
 }	// end function
 
