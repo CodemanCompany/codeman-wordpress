@@ -406,7 +406,7 @@ function load_more() {
 		unset( $category );
 
 		$data = get_publications( get_config( [
-			'category__and'		=>	$ids,
+			'category__and'		=>	isset( $_GET[ 'category' ] ) ? $ids : NULL,
 			'paged'				=>	$_GET[ 'page' ],
 			'posts_per_page'	=>	POSTS_PER_PAGE,
 		] ) );
