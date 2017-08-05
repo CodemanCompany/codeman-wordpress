@@ -213,7 +213,7 @@ function get_open_graph() {
 	return false;
 }	// end function
 
-function get_publications( $query = NULL ): object {
+function get_publications( $query = NULL ): stdClass {
 	if( is_null( $query ) || ! is_array( $query = query_posts( $query ) ) )
 		throw new Exception( 'The query is wrong.' );
 
@@ -265,7 +265,7 @@ function get_publications( $query = NULL ): object {
 	];
 }	// end function
 
-function get_publications_for( $params = NULL ): object {
+function get_publications_for( $params = NULL ): stdClass {
 	if( is_null( $params ) )
 		throw new Exception( 'The parameters are not correct.' );
 	elseif( isset( $params[ 'section' ] ) ) {
