@@ -25,7 +25,7 @@ define( 'INSTAGRAM_COUNT', 10 );
 define( 'INSTAGRAM_TOKEN', '' );
 define( 'MAPS_KEY', '' );
 
-function codeman_wp_title( $title, $sep ): string {
+function codeman_wp_title( string $title, string $sep ): string {
 	$title .= get_bloginfo( 'name', 'display' );
 
 	$description = get_bloginfo( 'description', 'display' );
@@ -37,7 +37,7 @@ function codeman_wp_title( $title, $sep ): string {
 
 // TODO: get_address()
 
-function get_best_category( $categories ) {;
+function get_best_category( array $categories ) {;
 	if( count( $categories ) === 1 )
 		return ( object ) [
 			'name'	=>	$categories[ 0 ] -> name,
@@ -89,7 +89,7 @@ function get_subcategories( string $slug = NULL ): array {
 	return $categories;
 }	// end function
 
-function get_config( $params = NULL ): array {
+function get_config( array $params = NULL ): array {
 	$is_singular = is_singular();
 
 	if( isset( $params[ 'category__and' ] ) ) {
@@ -127,14 +127,14 @@ function get_config( $params = NULL ): array {
 	];
 }	// end function
 
-function get_custom( $params = NULL ) {
+function get_custom( array $params = NULL ) {
 	if( is_null( $params ) )
 		throw new Exception( 'The parameters are incorrect.' );
 
 	return is_null( $store = get_post_custom_values( $params[ 'key' ], $params[ 'id' ] ) ) ? NULL : $store[ 0 ];
 }	// end function
 
-function get_data( $type = NULL, $id = NULL ) {
+function get_data( string $type = NULL, int $id = NULL ) {
 	if( is_null( $type ) )
 		throw new Exception( 'Wrong type.' );
 	elseif( $type === 'category' ) {
@@ -156,7 +156,7 @@ function get_data( $type = NULL, $id = NULL ) {
 	return NULL;
 }	// end function
 
-function get_jwplayer( $service = NULL ) {
+function get_jwplayer( string $service = NULL ) {
 	if( is_null( $service ) )
 		return;
 
@@ -188,7 +188,7 @@ function get_gallery() {
 	return $gallery;
 }	// end function
 
-function get_image( $echo = TRUE ) {
+function get_image( bool $echo = TRUE ) {
 	$image = wp_get_attachment_image_src( get_post_thumbnail_id( get_the_ID() ), 'medium_large' )[ 0 ];
 
 	if( ! $echo )
@@ -197,7 +197,7 @@ function get_image( $echo = TRUE ) {
 	echo $image;
 }	// end function
 
-function get_location( $echo = TRUE ) {
+function get_location( bool $echo = TRUE ) {
 	$location = "http://{$_SERVER[ HTTP_HOST ]}{$_SERVER[ REQUEST_URI ]}";
 
 	if( ! $echo )
@@ -213,7 +213,7 @@ function get_open_graph() {
 	return false;
 }	// end function
 
-function get_publications( $query = NULL ): stdClass {
+function get_publications( array $query = NULL ): stdClass {
 	if( is_null( $query ) || ! is_array( $query = query_posts( $query ) ) )
 		throw new Exception( 'The query is wrong.' );
 
@@ -265,7 +265,7 @@ function get_publications( $query = NULL ): stdClass {
 	];
 }	// end function
 
-function get_publications_for( $params = NULL ): stdClass {
+function get_publications_for( array $params = NULL ): stdClass {
 	if( is_null( $params ) )
 		throw new Exception( 'The parameters are not correct.' );
 	elseif( isset( $params[ 'section' ] ) ) {
@@ -282,7 +282,7 @@ function get_publications_for( $params = NULL ): stdClass {
 		throw new Exception( 'Not found.' );
 }	// end function
 
-function get_search( $echo = TRUE ) {
+function get_search( bool $echo = TRUE ) {
 	if( ! isset( $_GET[ 's' ] ) )
 		return;
 
@@ -292,7 +292,7 @@ function get_search( $echo = TRUE ) {
 	echo htmlentities( $_GET[ 's' ] );
 }	// end function
 
-function get_subterms( $slug = NULL, $taxonomy = NULL ): array {
+function get_subterms( string $slug = NULL, string $taxonomy = NULL ): array {
 	if( is_null( $slug ) )
 		throw new Exception( 'Slug cannot be null.' );
 	if( is_null( $taxonomy ) )
@@ -326,7 +326,7 @@ function get_subterms( $slug = NULL, $taxonomy = NULL ): array {
 	return $terms;
 }	// end function
 
-function get_tags_codeman( $id = NULL, $taxonomy = NULL ): array {
+function get_tags_codeman( int $id = NULL, string $taxonomy = NULL ): array {
 	$tags = [];
 	$data = wp_get_post_terms( $id, $taxonomy, [
 		'orderby'	=>	'parent',
@@ -347,7 +347,7 @@ function get_tags_codeman( $id = NULL, $taxonomy = NULL ): array {
 	return $tags;
 }	// end function
 
-function get_url( $echo = TRUE ) {
+function get_url( bool $echo = TRUE ) {
 	if( ! $echo )
 		return get_permalink();
 
@@ -424,12 +424,12 @@ function load_more() {
 	exit;
 }	// end function
 
-function my_page_menu_args( $args ) {
+function my_page_menu_args( array $args ) {
 	$args[ 'show_home' ] = TRUE;
 	return $args;
 }	// end function
 
-function my_post_queries( $query ) {
+function my_post_queries( WP_Query $query ) {
 	if( ! is_admin() && $query -> is_main_query() ) {
 		$query -> set( 'post_status', is_draft() ? 'draft' : 'publish' );
 
@@ -444,16 +444,16 @@ function my_post_queries( $query ) {
 	}	// end if
 }	// end function
 
-function send_smtp_email( $phpmailer ) {
+function send_smtp_email( PHPMailer $phpmailer ) {
 	$phpmailer -> isSMTP();
-	$phpmailer -> Host = 'HOST';
+	$phpmailer -> Host = 'email-smtp.us-east-1.amazonaws.com';
 	$phpmailer -> SMTPAuth = true;
 	$phpmailer -> Port = '587';
-	$phpmailer -> Username = 'IAM_USER';
-	$phpmailer -> Password = 'IAM_PASSWORD';
+	$phpmailer -> Username = '';
+	$phpmailer -> Password = '';
 	$phpmailer -> SMTPSecure = 'tls';
-	$phpmailer -> From = 'email';
-	$phpmailer -> FromName = 'Name';
+	$phpmailer -> From = 'wordpress@codeman.company';
+	$phpmailer -> FromName = 'WordPress';
 }	// end function
 
 add_action( 'phpmailer_init', 'send_smtp_email' );
