@@ -172,7 +172,7 @@ function get_gallery() {
 
 	$gallery = ( object ) [
 		'ids'		=>	explode( ',', $gallery[ 'ids' ] ),
-		'images'	=>	$gallery[ 'src' ]
+		'images'	=>	$gallery[ 'src' ],
 	];
 	$gallery -> total = count( $gallery -> ids );
 
@@ -307,7 +307,7 @@ function get_subterms( string $slug = NULL, string $taxonomy = NULL ): array {
 		'order'			=>	'ASC',
 		'orderby'		=>	'name',
 		'parent'		=>	is_int( $slug ) ? $slug : $parent -> term_id,
-		'taxonomy'		=>	$taxonomy
+		'taxonomy'		=>	$taxonomy,
 	];
 
 	foreach( get_terms( $params ) as $key => $category ) {
@@ -331,7 +331,7 @@ function get_tags_codeman( int $id = NULL, string $taxonomy = NULL ): array {
 	$data = wp_get_post_terms( $id, $taxonomy, [
 		'orderby'	=>	'parent',
 		'order'		=>	'ASC',
-		'fields'	=>	'all'
+		'fields'	=>	'all',
 	] );
 	$data = ! $data ? [] : $data;
 	
@@ -357,7 +357,7 @@ function get_url( bool $echo = TRUE ) {
 function instagram() {
 	$output = [
 		'message'	=>	'Bad request',
-		'result'	=>	'error'
+		'result'	=>	'error',
 	];
 
 	if( $_SERVER[ 'REQUEST_METHOD' ] === 'GET' ) {
@@ -386,7 +386,7 @@ function is_draft(): bool {
 function load_more() {
 	$output = [
 		'message'	=>	'Bad request',
-		'result'	=>	'error'
+		'result'	=>	'error',
 	];
 
 	if(
