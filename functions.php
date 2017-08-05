@@ -16,7 +16,7 @@ define( 'ARGS', [
 	'show_ui'			=>	true,
 ] );
 
-register_taxonomy( 'googlemaps', array( 'geolocation' ), ARGS );
+register_taxonomy( 'googlemaps', [ 'geolocation' ], ARGS );
 
 // Config
 define( 'POSTS_PER_PAGE', 15 );
@@ -244,7 +244,6 @@ function get_publications( $query = NULL ): object {
 			],
 			'modified'	=>	$post -> post_modified,
 			'status'	=>	$post -> post_status,
-			// 'tags'		=>	get_the_tags( $post -> ID ),
 			'tags'		=>	get_tags_codeman( $post -> ID, 'post_tag' ),
 			'googlemaps'	=>	get_tags_codeman( $post -> ID, 'googlemaps' ),
 			'title'		=>	$post -> post_title,
@@ -407,7 +406,7 @@ function load_more() {
 		unset( $category );
 
 		$data = get_publications( get_config( [
-			'category__and'		=>	$ids,
+			'category__and'		=>	isset( $_GET[ 'category' ] ) ? $ids : NULL,
 			'paged'				=>	$_GET[ 'page' ],
 			'posts_per_page'	=>	POSTS_PER_PAGE,
 		] ) );
