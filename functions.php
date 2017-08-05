@@ -19,11 +19,12 @@ define( 'ARGS', [
 register_taxonomy( 'googlemaps', [ 'geolocation' ], ARGS );
 
 // Config
-define( 'POSTS_PER_PAGE', 15 );
-define( 'POSTS_PER_SIDEBAR', 6 );
 define( 'INSTAGRAM_COUNT', 10 );
 define( 'INSTAGRAM_TOKEN', '' );
 define( 'MAPS_KEY', '' );
+define( 'POSTS_PER_PAGE', 15 );
+define( 'POSTS_PER_SIDEBAR', 6 );
+define( 'TEMPLATE_PATH', get_template_directory() . '/' );
 
 function codeman_wp_title( string $title, string $sep ): string {
 	$title .= get_bloginfo( 'name', 'display' );
