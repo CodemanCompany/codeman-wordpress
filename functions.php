@@ -358,7 +358,7 @@ function get_url( bool $echo = TRUE ) {
 function instagram() {
 	$output = [
 		'message'	=>	'Bad request',
-		'result'	=>	'error',
+		'status'	=>	'error',
 	];
 
 	if( $_SERVER[ 'REQUEST_METHOD' ] === 'GET' ) {
@@ -387,7 +387,7 @@ function is_draft(): bool {
 function load_more() {
 	$output = [
 		'message'	=>	'Bad request',
-		'result'	=>	'error',
+		'status'	=>	'error',
 	];
 
 	if(
@@ -414,7 +414,7 @@ function load_more() {
 
 		$output = [
 			'data'	=>	$data -> data,
-			'result'=>	'success',
+			'status'=>	'success',
 			'rows'	=>	$data -> rows,
 			'total'	=>	intval( wp_count_posts() -> publish ),
 		];
