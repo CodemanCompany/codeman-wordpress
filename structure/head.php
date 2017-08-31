@@ -7,7 +7,7 @@
 <!-- The Open Graph protocol -->
 <?php if( $og = get_open_graph() ):?>
 	<meta property="og:description" content="<?php echo $og -> content;?>" />
-	<meta property="og:image" content="<?php echo $og -> image;?>" />
+	<meta property="og:image" content="<?php echo $og -> images -> medium_large;?>" />
 	<meta property="og:title" content="<?php echo $og -> title;?>" />
 	<meta property="og:url" content="<?php echo $og -> url;?>" />
 <?php elseif( IS_CATEGORY ):?>
