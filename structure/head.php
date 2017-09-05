@@ -4,6 +4,7 @@
 <meta name="theme-color" content="#ffffff" />
 
 <meta property="fb:app_id" content="" />
+<meta property="og:type" content="website" />
 <!-- The Open Graph protocol -->
 <?php if( $og = get_open_graph() ):?>
 	<meta property="og:description" content="<?php echo $og -> content;?>" />
