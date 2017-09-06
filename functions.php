@@ -445,15 +445,43 @@ function my_post_queries( WP_Query $query ) {
 	}	// end if
 }	// end function
 
-function send_mail( string $to = NULL, string $subject = NULL, string $template = NULL ) {
-	if( is_null( $to ) || ! filter_var( $to, FILTER_VALIDATE_EMAIL ) )
-		throw new Exception( 'Wrong email.' );
-	if( is_null( $subject ) )
-		throw new Exception( 'Wrong subject.' );
-	if( is_null( $template ) )
-		throw new Exception( 'Wrong template.' );
+function send_contact() {
+	header( 'Content-Type: application/json' );
+	
+	$output = [
+		'message'	=>	'Bad request',
+		'status'	=>	'error',
+	];
 
-	wp_mail( $to, $subject, file_get_contents( TEMPLATE_PATH . pathinfo( $template, PATHINFO_BASENAME ) ) );
+	if(
+		$_SERVER[ 'REQUEST_METHOD' ] === 'POST'
+	) {
+		
+	}	// end function
+
+	echo json_encode( $output );
+	exit;
+}	// end function
+
+function send_mail( array $params = NULL ) {
+	if(
+		! is_array( $params ) ||
+		! is_string( $params[ 'to' ] ?? NULL ) ||
+		! filter_var( $params[ 'to' ], FILTER_VALIDATE_EMAIL ) ||
+		! is_string( $params[ 'subject' ] ?? NULL ) ||
+		! is_string( $params[ 'template' ] ?? NULL ) ||
+		! is_array( $params[ 'data' ] ?? NULL )
+	)
+		throw new Exception( 'The parameters are incorrect.' );
+
+	$html = file_get_contents( TEMPLATE_PATH . pathinfo( $params[ 'template' ], PATHINFO_BASENAME ) );
+
+	foreach ( $params[ 'data' ] as $key => $value )
+		$html = str_replace( '{' . $key . '}', $value, $html );
+
+	unset( $key, $value );
+
+	wp_mail( $params[ 'to' ], $params[ 'subject' ], $html );
 }	// end function
 
 function send_smtp_email( PHPMailer $phpmailer ) {
