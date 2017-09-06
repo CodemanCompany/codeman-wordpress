@@ -445,6 +445,17 @@ function my_post_queries( WP_Query $query ) {
 	}	// end if
 }	// end function
 
+function send_mail( string $to = NULL, string $subject = NULL, string $template = NULL ) {
+	if( is_null( $to ) || ! filter_var( $to, FILTER_VALIDATE_EMAIL ) )
+		throw new Exception( 'Wrong email.' );
+	if( is_null( $subject ) )
+		throw new Exception( 'Wrong subject.' );
+	if( is_null( $template ) )
+		throw new Exception( 'Wrong template.' );
+
+	wp_mail( $to, $subject, file_get_contents( TEMPLATE_PATH . pathinfo( $template, PATHINFO_BASENAME ) ) );
+}	// end function
+
 function send_smtp_email( PHPMailer $phpmailer ) {
 	$phpmailer -> isSMTP();
 	$phpmailer -> Host = 'email-smtp.us-east-1.amazonaws.com';
@@ -457,6 +468,10 @@ function send_smtp_email( PHPMailer $phpmailer ) {
 	$phpmailer -> FromName = 'WordPress';
 }	// end function
 
+function wpdocs_set_html_mail_content_type() {
+	return 'text/html';
+}	// end function
+
 add_action( 'phpmailer_init', 'send_smtp_email' );
 add_action( 'pre_get_posts', 'my_post_queries' );
 add_action( 'wp_ajax_instagram', 'instagram' );
@@ -464,6 +479,7 @@ add_action( 'wp_ajax_nopriv_instagram', 'instagram' );
 add_action( 'wp_ajax_load_more', 'load_more' );
 add_action( 'wp_ajax_nopriv_load_more', 'load_more' );
 
+add_filter( 'wp_mail_content_type', 'wpdocs_set_html_mail_content_type' );
 add_filter( 'wp_page_menu_args', 'my_page_menu_args' );
 add_filter( 'wp_title', 'codeman_wp_title', 10, 2 );
 
