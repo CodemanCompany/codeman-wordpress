@@ -477,7 +477,7 @@ function send_mail( array $params = NULL ) {
 	$html = file_get_contents( TEMPLATE_PATH . pathinfo( $params[ 'template' ], PATHINFO_BASENAME ) );
 
 	foreach ( $params[ 'data' ] as $key => $value )
-		$html = str_replace( '{' . $key . '}', $value, $html );
+		$html = str_replace( '{' . $key . '}', strip_tags( $value ), $html );
 
 	unset( $key, $value );
 
