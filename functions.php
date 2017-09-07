@@ -466,13 +466,18 @@ function send_contact() {
 function send_mail( array $params = NULL ) {
 	if(
 		! is_array( $params ) ||
-		! is_string( $params[ 'to' ] ?? NULL ) ||
-		! filter_var( $params[ 'to' ], FILTER_VALIDATE_EMAIL ) ||
+		! is_array( $params[ 'to' ] ?? NULL ) ||
 		! is_string( $params[ 'subject' ] ?? NULL ) ||
 		! is_string( $params[ 'template' ] ?? NULL ) ||
 		! is_array( $params[ 'data' ] ?? NULL )
 	)
 		throw new Exception( 'The parameters are incorrect.' );
+
+	foreach( $params[ 'to' ] as $email )
+		if( ! filter_var( $email, FILTER_VALIDATE_EMAIL ) )
+			throw new Exception( 'Invalid emails.' );
+		
+	unset( $email );
 
 	$html = file_get_contents( TEMPLATE_PATH . pathinfo( $params[ 'template' ], PATHINFO_BASENAME ) );
 
