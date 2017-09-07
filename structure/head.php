@@ -24,7 +24,7 @@
 <?php endif; unset( $og );?>
 
 <link href="<?php bloginfo( 'stylesheet_url' );?>" rel="stylesheet" />
-<link href="<?php bloginfo( 'template_url' );?>/bower_components/fancybox/dist/jquery.fancybox.min.css" rel="stylesheet" />
+<link href="<?php bloginfo( 'template_url' );?>/node_modules/@fancyapps/fancybox/dist/jquery.fancybox.min.css" rel="stylesheet" />
 
 
 <link rel="shortcut icon" href="<?php image_dir();?>/favicon.png" />
