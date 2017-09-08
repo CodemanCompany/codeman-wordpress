@@ -157,6 +157,23 @@ function get_data( string $type = NULL, int $id = NULL ) {
 	return NULL;
 }	// end function
 
+function get_ip(): string {
+    if( getenv( 'HTTP_CLIENT_IP' ) )
+        return getenv( 'HTTP_CLIENT_IP' );
+    elseif( getenv( 'HTTP_X_FORWARDED_FOR' ) )
+        return getenv( 'HTTP_X_FORWARDED_FOR' );
+    elseif( getenv( 'HTTP_X_FORWARDED' ) )
+        return getenv( 'HTTP_X_FORWARDED' );
+    elseif( getenv( 'HTTP_FORWARDED_FOR' ) )
+        return getenv( 'HTTP_FORWARDED_FOR' );
+    elseif( getenv( 'HTTP_FORWARDED' ) )
+       return getenv( 'HTTP_FORWARDED' );
+    elseif( getenv( 'REMOTE_ADDR' ) )
+        return getenv( 'REMOTE_ADDR' );
+    else
+        return 'unknown';
+}	// end function
+
 function get_jwplayer( string $service = NULL ) {
 	if( is_null( $service ) )
 		return;
@@ -445,7 +462,7 @@ function my_post_queries( WP_Query $query ) {
 	}	// end if
 }	// end function
 
-function send_contact() {
+function new_contact() {
 	header( 'Content-Type: application/json' );
 	
 	$output = [
@@ -454,9 +471,111 @@ function send_contact() {
 	];
 
 	if(
-		$_SERVER[ 'REQUEST_METHOD' ] === 'POST'
+		$_SERVER[ 'REQUEST_METHOD' ] === 'POST' &&
+		( isset( $_POST[ 'name' ] ) && ! empty( $_POST[ 'name' ] ) ) &&
+		( isset( $_POST[ 'email' ] ) && ! empty( $_POST[ 'email' ] ) ) &&
+		( isset( $_POST[ 'message' ] ) && ! empty( $_POST[ 'message' ] ) ) &&
+		isset( $_POST[ 'privacy' ] )
 	) {
-		
+		try {
+			$input = ( object ) [
+				'name'		=>	trim( $_POST[ 'name' ] ),
+				'tel'		=>	trim( $_POST[ 'tel' ] ?? '' ),
+				'email'		=>	trim( $_POST[ 'email' ] ),
+				'subject'	=>	trim( $_POST[ 'subject' ] ?? '' ),
+				'message'	=>	trim( $_POST[ 'message' ] ),
+			];
+
+			// global $wpdb;
+			// $wpdb -> insert( 'wp_contacts', [
+			// 	'email'	=>	$input -> email,
+			// 	'ip'	=>	get_ip(),
+			// 	'name'	=>	$input -> name,
+			// ] );
+
+			send_mail( [
+				'to'		=>	$input -> email,
+				'template'	=>	'thanks.html',
+				'subject'	=>	'Gracias por escribir',
+				'data'		=>	( array ) $input
+			] );
+
+			send_mail( [
+				'to'		=>	[ 'gustavo@codeman.company' ],
+				'template'	=>	'delivery.html',
+				'subject'	=>	'💡 Tienes un nuevo contacto en tu sitio web',
+				'data'		=>	( array ) $input
+			] );
+
+			$output = [
+				'message'	=>	'Message sent',
+				'status'	=>	'success',
+			];
+		}	// end try
+		catch( Exception $error ) {
+			$output = [
+				'message'	=>	$error -> getMessage(),
+				'status'	=>	'error',
+			];
+		}	// end catch
+	}	// end function
+
+	echo json_encode( $output );
+	exit;
+}	// end function
+
+function new_subscription() {
+	header( 'Content-Type: application/json' );
+	
+	$output = [
+		'message'	=>	'Bad request',
+		'status'	=>	'error',
+	];
+
+	if(
+		$_SERVER[ 'REQUEST_METHOD' ] === 'POST' &&
+		( isset( $_POST[ 'name' ] ) && ! empty( $_POST[ 'name' ] ) ) &&
+		( isset( $_POST[ 'email' ] ) && ! empty( $_POST[ 'email' ] ) ) &&
+		isset( $_POST[ 'privacy' ] )
+	) {
+		try {
+			$input = ( object ) [
+				'name'		=>	trim( $_POST[ 'name' ] ),
+				'email'		=>	trim( $_POST[ 'email' ] ),
+			];
+
+			global $wpdb;
+			$wpdb -> insert( 'wp_mailing', [
+				'email'	=>	$input -> email,
+				'ip'	=>	get_ip(),
+				'name'	=>	$input -> name,
+			] );
+
+			send_mail( [
+				'to'		=>	$input -> email,
+				'template'	=>	'ticket.html',
+				'subject'	=>	'Gracias por suscribirte',
+				'data'		=>	( array ) $input
+			] );
+
+			send_mail( [
+				'to'		=>	[ 'gustavo@codeman.company' ],
+				'template'	=>	'subscription.html',
+				'subject'	=>	'💡 Tienes un nuevo suscriptor en tu sitio web',
+				'data'		=>	( array ) $input
+			] );
+
+			$output = [
+				'message'	=>	'Successful subscription',
+				'status'	=>	'success',
+			];
+		}	// end try
+		catch( Exception $error ) {
+			$output = [
+				'message'	=>	$error -> getMessage(),
+				'status'	=>	'error',
+			];
+		}	// end catch
 	}	// end function
 
 	echo json_encode( $output );
@@ -479,7 +598,7 @@ function send_mail( array $params = NULL ) {
 		
 	unset( $email );
 
-	$html = file_get_contents( TEMPLATE_PATH . pathinfo( $params[ 'template' ], PATHINFO_BASENAME ) );
+	$html = file_get_contents( TEMPLATE_PATH . 'template/' . pathinfo( $params[ 'template' ], PATHINFO_BASENAME ) );
 
 	foreach ( $params[ 'data' ] as $key => $value )
 		$html = str_replace( '{' . $key . '}', strip_tags( $value ), $html );
@@ -511,6 +630,10 @@ add_action( 'wp_ajax_instagram', 'instagram' );
 add_action( 'wp_ajax_nopriv_instagram', 'instagram' );
 add_action( 'wp_ajax_load_more', 'load_more' );
 add_action( 'wp_ajax_nopriv_load_more', 'load_more' );
+add_action( 'wp_ajax_new_contact', 'new_contact' );
+add_action( 'wp_ajax_nopriv_new_contact', 'new_contact' );
+add_action( 'wp_ajax_new_subscription', 'new_subscription' );
+add_action( 'wp_ajax_nopriv_new_subscription', 'new_subscription' );
 
 add_filter( 'wp_mail_content_type', 'wpdocs_set_html_mail_content_type' );
 add_filter( 'wp_page_menu_args', 'my_page_menu_args' );
