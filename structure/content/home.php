@@ -132,17 +132,17 @@
 			<!-- <input placeholder="Teléfono" type="tel" data-ng-model="input.tel" /> -->
 			<div class="checkbox">
 				<label>
-					<input type="checkbox" data-ng-model="privacy" /> <strong>Acepto las condiciones del servicio y la política de privacidad de Codeman.</strong>
+					<input type="checkbox" data-ng-model="input.privacy" /> <strong>Acepto las condiciones del servicio y la política de privacidad de Codeman.</strong>
 				</label>
 			</div>
 
 			<br />
 
-			<div class="g-recaptcha" data-sitekey="6LemrxcTAAAAADw2IaqCY0-arquCK1qcGNprv34E"></div>
+			<div class="g-recaptcha" data-sitekey="6LezZy4UAAAAAPCQYl0U63f-rvAsI_phC6pGLVVv"></div>
 			<span class="error" data-ng-show="status.recaptcha.status === false">Completa el reCAPTCHA por favor.</span>
 
 			<div class="text-right">
-				<button class="btn btn-primary" type="button" data-ng-disabled="! status.email.status || ! status.message.status || ! status.name.status || ! status.subject.status || ! privacy || loading" data-ng-click="contact()">
+				<button class="btn btn-primary" type="button" data-ng-disabled="! status.email.status || ! status.message.status || ! status.name.status || ! status.subject.status || ! input.privacy || loading" data-ng-click="contact()">
 					<span data-ng-show="loading"><span class="fa fa-spinner fa-pulse"></span> Enviando</span>
 					<span data-ng-hide="loading">Enviar Contacto</span>
 				</button>

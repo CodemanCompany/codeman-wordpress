@@ -13,10 +13,6 @@ app.factory( 'request', function( $http, url ) {
 		return true;
 	};
 
-	request.contact = function( data ) {
-		return this.put( this.url.controller.contact, data );
-	};
-
 	request.get = function( url, params ) {
 		var object = null;
 		try {

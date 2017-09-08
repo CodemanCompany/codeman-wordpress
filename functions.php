@@ -24,6 +24,7 @@ define( 'INSTAGRAM_TOKEN', '' );
 define( 'MAPS_KEY', '' );
 define( 'POSTS_PER_PAGE', 15 );
 define( 'POSTS_PER_SIDEBAR', 6 );
+define( 'RECAPTCHA_SECRET', '' );
 define( 'TEMPLATE_PATH', get_template_directory() . '/' );
 
 function codeman_wp_title( string $title, string $sep ): string {
@@ -389,7 +390,7 @@ function instagram() {
 	}	// end if
 
 	header( 'Content-Type: application/json' );
-	echo json_encode( $output );
+	echo json_encode( $output, JSON_PRETTY_PRINT );
 	exit;
 }	// end function
 
@@ -438,7 +439,7 @@ function load_more() {
 	}	// end if
 
 	header( 'Content-Type: application/json' );
-	echo json_encode( $output );
+	echo json_encode( $output, JSON_PRETTY_PRINT );
 	exit;
 }	// end function
 
@@ -473,8 +474,11 @@ function new_contact() {
 	if(
 		$_SERVER[ 'REQUEST_METHOD' ] === 'POST' &&
 		( isset( $_POST[ 'name' ] ) && ! empty( $_POST[ 'name' ] ) ) &&
+		// ( isset( $_POST[ 'tel' ] ) && ! empty( $_POST[ 'tel' ] ) ) &&
 		( isset( $_POST[ 'email' ] ) && ! empty( $_POST[ 'email' ] ) ) &&
+		( isset( $_POST[ 'subject' ] ) && ! empty( $_POST[ 'subject' ] ) ) &&
 		( isset( $_POST[ 'message' ] ) && ! empty( $_POST[ 'message' ] ) ) &&
+		( isset( $_POST[ 'g-recaptcha-response' ] ) && ! empty( $_POST[ 'g-recaptcha-response' ] ) ) &&
 		isset( $_POST[ 'privacy' ] )
 	) {
 		try {
@@ -484,17 +488,17 @@ function new_contact() {
 				'email'		=>	trim( $_POST[ 'email' ] ),
 				'subject'	=>	trim( $_POST[ 'subject' ] ?? '' ),
 				'message'	=>	trim( $_POST[ 'message' ] ),
+				'g-recaptcha-response'	=>	trim( $_POST[ 'g-recaptcha-response' ] ),
 			];
 
-			// global $wpdb;
-			// $wpdb -> insert( 'wp_contacts', [
-			// 	'email'	=>	$input -> email,
-			// 	'ip'	=>	get_ip(),
-			// 	'name'	=>	$input -> name,
-			// ] );
+			// reCAPTCHA
+			recaptcha( $input -> { 'g-recaptcha-response' } );
 
+			// Validations
+
+			// Notifications
 			send_mail( [
-				'to'		=>	$input -> email,
+				'to'		=>	[ $input -> email ],
 				'template'	=>	'thanks.html',
 				'subject'	=>	'Gracias por escribir',
 				'data'		=>	( array ) $input
@@ -506,6 +510,17 @@ function new_contact() {
 				'subject'	=>	'💡 Tienes un nuevo contacto en tu sitio web',
 				'data'		=>	( array ) $input
 			] );
+
+			// Database
+			global $wpdb;
+			$wpdb -> insert( 'wp_contacts', [
+				'name'		=>	$input -> name,
+				'tel'		=>	$input -> tel,
+				'email'		=>	$input -> email,
+				'subject'	=>	$input -> subject,
+				'message'	=>	$input -> message,
+				'ip'	=>	get_ip(),
+			], [ '%s', '%s', '%s', '%s', '%s', '%s' ] );
 
 			$output = [
 				'message'	=>	'Message sent',
@@ -520,7 +535,7 @@ function new_contact() {
 		}	// end catch
 	}	// end function
 
-	echo json_encode( $output );
+	echo json_encode( $output, JSON_PRETTY_PRINT );
 	exit;
 }	// end function
 
@@ -536,23 +551,24 @@ function new_subscription() {
 		$_SERVER[ 'REQUEST_METHOD' ] === 'POST' &&
 		( isset( $_POST[ 'name' ] ) && ! empty( $_POST[ 'name' ] ) ) &&
 		( isset( $_POST[ 'email' ] ) && ! empty( $_POST[ 'email' ] ) ) &&
+		( isset( $_POST[ 'g-recaptcha-response' ] ) && ! empty( $_POST[ 'g-recaptcha-response' ] ) ) &&
 		isset( $_POST[ 'privacy' ] )
 	) {
 		try {
 			$input = ( object ) [
 				'name'		=>	trim( $_POST[ 'name' ] ),
 				'email'		=>	trim( $_POST[ 'email' ] ),
+				'g-recaptcha-response'	=>	trim( $_POST[ 'g-recaptcha-response' ] ),
 			];
 
-			global $wpdb;
-			$wpdb -> insert( 'wp_mailing', [
-				'email'	=>	$input -> email,
-				'ip'	=>	get_ip(),
-				'name'	=>	$input -> name,
-			] );
+			// reCAPTCHA
+			recaptcha( $input -> { 'g-recaptcha-response' } );
 
+			// Validations
+
+			// Notifications
 			send_mail( [
-				'to'		=>	$input -> email,
+				'to'		=>	[ $input -> email ],
 				'template'	=>	'ticket.html',
 				'subject'	=>	'Gracias por suscribirte',
 				'data'		=>	( array ) $input
@@ -564,6 +580,14 @@ function new_subscription() {
 				'subject'	=>	'💡 Tienes un nuevo suscriptor en tu sitio web',
 				'data'		=>	( array ) $input
 			] );
+
+			// Database
+			global $wpdb;
+			$wpdb -> insert( 'wp_mailing', [
+				'name'	=>	$input -> name,
+				'email'	=>	$input -> email,
+				'ip'	=>	get_ip(),
+			], [ '%s', '%s', '%s' ] );
 
 			$output = [
 				'message'	=>	'Successful subscription',
@@ -578,8 +602,29 @@ function new_subscription() {
 		}	// end catch
 	}	// end function
 
-	echo json_encode( $output );
+	echo json_encode( $output, JSON_PRETTY_PRINT );
 	exit;
+}	// end function
+
+function recaptcha( string $response = NULL ) {
+	if( ! is_string( $response ) )
+		throw new Exception( 'Invalid secret.' );
+
+	$context = stream_context_create( [
+		'http'	=>	[
+			'content'	=>	http_build_query( [
+				'secret'	=>	RECAPTCHA_SECRET,
+				'response'	=>	$response,
+			] ),
+			'header'	=>	'Content-type: application/x-www-form-urlencoded',
+			'method'	=>	'POST',
+		]
+	] );
+	$request = file_get_contents( 'https://www.google.com/recaptcha/api/siteverify', false, $context );
+	$request = json_decode( $request );
+
+	if( ! $request -> success )
+		throw new Exception( 'Is robot. We take legal actions.' );
 }	// end function
 
 function send_mail( array $params = NULL ) {

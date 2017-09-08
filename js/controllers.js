@@ -136,11 +136,8 @@ function ContactController( $scope, $timeout, request, validate ) {
 			return;
 		}	// end if
 
-		$scope.input.delivery = 'http://artezia.technology/delivery.html';
-		$scope.input.thanks = 'http://artezia.technology/thanks.html';
-
 		$scope.loading = true;
-		request.contact( $scope.input )
+		request.post( request.url.controller.wordpress + '?action=new_contact', $scope.input )
 		.then( function( response ) {
 			$scope.alert = response.data;
 			$scope.reset();
