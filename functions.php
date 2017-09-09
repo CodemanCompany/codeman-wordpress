@@ -302,13 +302,10 @@ function get_publications_for( array $params = NULL ): stdClass {
 }	// end function
 
 function get_search( bool $echo = TRUE ) {
-	if( ! isset( $_GET[ 's' ] ) )
-		return;
-
 	if( ! $echo )
-		return htmlentities( $_GET[ 's' ] );
+		return htmlentities( $_GET[ 's' ] ?? '' );
 
-	echo htmlentities( $_GET[ 's' ] );
+	echo htmlentities( $_GET[ 's' ] ?? '' );
 }	// end function
 
 function get_subterms( string $slug = NULL, string $taxonomy = NULL ): array {
@@ -443,7 +440,7 @@ function load_more() {
 	exit;
 }	// end function
 
-function my_page_menu_args( array $args ) {
+function my_page_menu_args( array $args ): array {
 	$args[ 'show_home' ] = TRUE;
 	return $args;
 }	// end function
@@ -486,7 +483,7 @@ function new_contact() {
 				'name'		=>	trim( $_POST[ 'name' ] ),
 				'tel'		=>	trim( $_POST[ 'tel' ] ?? '' ),
 				'email'		=>	trim( $_POST[ 'email' ] ),
-				'subject'	=>	trim( $_POST[ 'subject' ] ?? '' ),
+				'subject'	=>	trim( $_POST[ 'subject' ] ),
 				'message'	=>	trim( $_POST[ 'message' ] ),
 				'g-recaptcha-response'	=>	trim( $_POST[ 'g-recaptcha-response' ] ),
 			];
@@ -665,7 +662,7 @@ function send_smtp_email( PHPMailer $phpmailer ) {
 	$phpmailer -> FromName = 'WordPress';
 }	// end function
 
-function wpdocs_set_html_mail_content_type() {
+function wpdocs_set_html_mail_content_type(): string {
 	return 'text/html';
 }	// end function
 
