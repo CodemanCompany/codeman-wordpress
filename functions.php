@@ -409,7 +409,7 @@ function load_more() {
 		$_SERVER[ 'REQUEST_METHOD' ] === 'GET' &&
 		isset( $_GET[ 'page' ] ) &&
 		! empty( $_GET[ 'page' ] ) &&
-		// $_GET[ 'page' ] > 1	&&
+		$_GET[ 'page' ] > 1	&&
 		( ( $_GET[ 'page' ] - 1 ) * POSTS_PER_PAGE ) - wp_count_posts() -> publish < 0
 	) {
 		$categories = explode( ',', $_GET[ 'category' ] ?? NULL );
