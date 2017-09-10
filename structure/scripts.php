@@ -7,9 +7,9 @@
 <script src="<?php bloginfo( 'template_url' );?>/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="<?php bloginfo( 'template_url' );?>/node_modules/angular/angular.min.js"></script>
 <script src="<?php bloginfo( 'template_url' );?>/node_modules/angular-sanitize/angular-sanitize.min.js"></script>
+<script src="<?php bloginfo( 'template_url' );?>/js/lib/yaokiski.js"></script>
 <script src="<?php bloginfo( 'template_url' );?>/js/app.js"></script>
-<script src="<?php bloginfo( 'template_url' );?>/js/factories.js"></script>
-<script src="<?php bloginfo( 'template_url' );?>/js/controllers.js"></script>
+<script src="<?php bloginfo( 'template_url' );?>/js/components.js"></script>
 
 <!-- Facebook -->
 <!-- <div id="fb-root"></div>

@@ -1,11 +1,20 @@
 'use strict'
 
-var app = angular.module( 'app', [ 'ngSanitize' ] )
+var app = angular.module( 'app', [ 'yaokiski' ] )
 
-.config( function() {
+.config( [ function() {
 	$( document ).ready( function() {
-		$( 'input:not( [ type = "checkbox" ], [ type = "radio" ], [ type = "submit" ] ), select, textarea' ).addClass( 'form-control' );
-		// $( 'a[ href ^= "http" ], a[ href ^= "https" ] , a[ href *="files" ]' ).attr( 'target', '_blank' );
-		// write
+		var go = $( '.go' );
+		var page = $( 'html, body' );
+		
+		go.click( function( event ) {
+			event.preventDefault();
+			var id = $( this ).attr( 'data-href' );
+			page.animate( { scrollTop: $( '#' + id ).offset().top }, 'fast' );
+		} );
 	} );
+} ] )
+
+.controller( 'MainController', function( $controller, $scope ) {
+	$controller( 'YaokiskiController', { "$scope": $scope } );
 } );
