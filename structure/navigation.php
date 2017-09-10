@@ -1,12 +1,13 @@
 <div class="container">
 	<?php
-		wp_nav_menu( [
+		$navigation = wp_nav_menu( [
 			'container'			=>	'ul',
 			'container_class'	=>	'',
 			'container_id'		=>	'',
+			'echo'				=>	true,
 			'menu_class'		=>	'',
 			'menu_id'			=>	'',
-			'sort_column'		=>	'menu_order'
+			'sort_column'		=>	'menu_order',
 		] );
 	?>
 </div>
