@@ -1,23 +1,34 @@
+<?php
+var_dump( CATEGORY );
+?>
 <div class="container">
-	<h1><?php single_cat_title( '', true );?></h1>
+	<h1><?php echo CATEGORY[ 'name' ];?></h1>
 
 	<div class="row">
-		<article class="col-xs-9">
-			<?php if( have_posts() ): while( have_posts() ): the_post();?>
+		<section class="col-xs-9">
+			<?php
+				try {
+					foreach( get_publications_for( [ 'category_name' => CATEGORY[ 'slug' ] ] ) -> data as $post ):?>
+						<article><a href="#"><pre><?php var_dump( $post );?></pre></a></article>
+					<?php endforeach;
+					unset( $post );
+				}	// end try
+				catch( Exception $error ) {
+					echo $error -> getMessage();
+				}	// end catch
+			?>
 
-			<img class="img-responsive" src="<?php get_image();?>" alt="" />
-			<h2><?php the_title();?></h2>
-			<p><span class="text-muted"><?php the_date();?></span></p>
-			<p><?php the_content( '', FALSE, '' );?></p>
-			<a href="<?php get_url();?>">link</a>
-			
-			<?php endwhile; endif;?>
-			
-			<hr />
+			<article data-ng-repeat="post in posts" data-ng-click="go( post.url )">
+				<a href="#">{{post|json}}</a>
+			</article>
 
-			<div class="nav-previous text-left"><?php next_posts_link( 'Entradas anteriores' ); ?></div>
-			<div class="nav-next text-right"><?php previous_posts_link( 'Entradas recientes' ); ?></div>
-		</article>
+			<aside>
+				<div class="text-center">
+					<button type="button" data-ng-click="loadMore( '<?php echo CATEGORY[ 'slug' ];?>' )" data-ng-hide="loading">Ver más</button>
+					<span class="fa fa-circle-o-notch fa-spin loading" data-ng-show="loading"></span>
+				</div>
+			</aside>
+		</section>
 
 		<aside class="col-xs-3">
 			<?php get_template_part( 'structure/sidebar' );?>

@@ -33,7 +33,6 @@ var app = angular.module( 'app', [ 'ngSanitize', 'yaokiski' ] )
 		request.get( request.url.controller.wordpress, data )
 		.then( function( response ) {
 			if( request.check( response ) ) {
-				console.log(request.getData().data)
 				$scope.posts = useful.merge( $scope.posts || [], request.getData().data );
 				data.page++;
 			}	// end if

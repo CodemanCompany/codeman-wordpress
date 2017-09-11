@@ -60,37 +60,6 @@ function get_best_category( array $categories ) {;
 	return false;
 }	// end function
 
-function get_subcategories( string $slug = NULL ): array {
-	if( is_null( $slug ) )
-		throw new Exception( 'Slug cannot be null.' );
-
-	$categories = [];
-	$parent = is_int( $slug ) ? $slug : get_category_by_slug( $slug );
-
-	$params = [
-		'exclude'		=>	0,
-		'hide_empty'	=>	false,
-		'order'			=>	'ASC',
-		'orderby'		=>	'name',
-		'parent'		=>	is_int( $slug ) ? $slug : $parent -> term_id,
-	];
-
-	foreach( get_categories( $params ) as $key => $category ) {
-		$categories[] = ( object ) [
-			'count'	=>	$category -> count,
-			'id'	=>	$category -> term_id,
-			'index'	=>	$key,
-			'name'	=>	$category -> name,
-			'parent'=>	$category -> category_parent,
-			'slug'	=>	$category -> slug,
-			'url'	=>	get_category_link( $category -> cat_ID ),
-		];
-	}	// end foreach
-	unset( $key, $category );
-
-	return $categories;
-}	// end function
-
 function get_config( array $params = NULL ): array {
 	$is_singular = is_singular();
 
@@ -143,12 +112,14 @@ function get_data( string $type = NULL, int $id = NULL ) {
 		$categories = [];
 		foreach( get_the_category( $id ) as $key => $category ) {
 			$categories[] = ( object ) [
-				'id'	=>	$category -> term_id,
-				'index'	=>	$key,
-				'name'	=>	$category -> name,
-				'parent'=>	$category -> category_parent,
-				'slug'	=>	$category -> slug,
-				'url'	=>	get_category_link( $category -> cat_ID ),
+				'count'			=>	$category -> count,
+				'description'	=>	$category -> description,
+				'id'			=>	$category -> term_id,
+				'index'			=>	$key,
+				'name'			=>	$category -> name,
+				'parent'		=>	$category -> category_parent,
+				'slug'			=>	$category -> slug,
+				'url'			=>	get_category_link( $category -> cat_ID ),
 			];
 		}	// end foreach
 		unset( $key, $category );
@@ -326,18 +297,19 @@ function get_subterms( string $slug = NULL, string $taxonomy = NULL ): array {
 		'taxonomy'		=>	$taxonomy,
 	];
 
-	foreach( get_terms( $params ) as $key => $category ) {
+	foreach( get_terms( $params ) as $key => $term ) {
 		$terms[] = ( object ) [
-			'count'	=>	$category -> count,
-			'id'	=>	$category -> term_id,
-			'index'	=>	$key,
-			'name'	=>	$category -> name,
-			'parent'=>	$category -> category_parent,
-			'slug'	=>	$category -> slug,
-			'url'	=>	get_category_link( $category -> term_id ),
+			'count'			=>	$term -> count,
+			'description'	=>	$term -> description,
+			'id'			=>	$term -> term_id,
+			'index'			=>	$key,
+			'name'			=>	$term -> name,
+			'parent'		=>	$term -> category_parent,
+			'slug'			=>	$term -> slug,
+			'url'			=>	get_category_link( $term -> term_id ),
 		];
 	}	// end foreach
-	unset( $key, $category );
+	unset( $key, $term );
 
 	return $terms;
 }	// end function

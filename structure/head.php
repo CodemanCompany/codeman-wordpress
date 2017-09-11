@@ -5,14 +5,15 @@
 
 <meta property="fb:app_id" content="" />
 <meta property="og:type" content="website" />
+
 <!-- The Open Graph protocol -->
 <?php if( $og = get_open_graph() ):?>
 	<meta property="og:description" content="<?php echo $og -> content;?>" />
 	<meta property="og:image" content="<?php echo $og -> images -> medium_large;?>" />
 	<meta property="og:title" content="<?php echo $og -> title;?>" />
 	<meta property="og:url" content="<?php echo $og -> url;?>" />
-<?php elseif( IS_CATEGORY ):?>
-	<meta property="og:description" content="<?php bloginfo( 'description' );?>" />
+<?php elseif( IS_CATEGORY ): define( 'CATEGORY', ( array ) get_data( 'category' )[ 0 ] );?>
+	<meta property="og:description" content="<?php echo CATEGORY[ 'description' ];?>" />
 	<meta property="og:image" content="" />
 	<meta property="og:title" content="<?php single_cat_title( '', true );?>" />
 	<meta property="og:url" content="<?php get_location();?>" />
