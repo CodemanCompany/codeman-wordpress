@@ -2,6 +2,10 @@ app.component( 'contact', {
 	"controller":	[ '$scope', 'request', function( $scope, request ) {
 		$scope.loading = false;
 
+		grecaptcha.render( 'g-recaptcha-contact', {
+			"sitekey": "6LezZy4UAAAAAPCQYl0U63f-rvAsI_phC6pGLVVv",
+		} );
+
 		$scope.action = function() {
 			if( $scope.form.$invalid ) {
 				$scope.form.email.$pristine = false;
@@ -44,6 +48,10 @@ app.component( 'contact', {
 app.component( 'newsletter', {
 	"controller":	[ '$scope', 'request', function( $scope, request ) {
 		$scope.loading = false;
+
+		grecaptcha.render( 'g-recaptcha-newsletter', {
+			"sitekey": "6LezZy4UAAAAAPCQYl0U63f-rvAsI_phC6pGLVVv",
+		} );
 
 		$scope.action = function() {
 			if( $scope.form.$invalid ) {
