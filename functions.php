@@ -395,8 +395,9 @@ function load_more() {
 
 		$data = get_publications( get_config( [
 			'category__and'		=>	isset( $_GET[ 'category' ] ) ? $ids : NULL,
-			'paged'				=>	$_GET[ 'page' ],
+			'paged'				=>	intval( $_GET[ 'page' ] ),
 			'posts_per_page'	=>	POSTS_PER_PAGE,
+			's'					=>	isset( $_GET[ 's' ] ) ? strip_tags( $_GET[ 's' ] ) : NULL,
 		] ) );
 
 		$output = [

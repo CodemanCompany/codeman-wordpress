@@ -1,5 +1,6 @@
 <?php
 var_dump( CATEGORY );
+var_dump( strip_tags('') ?? 'A' );
 ?>
 <div class="container">
 	<h1><?php echo CATEGORY[ 'name' ];?></h1>
