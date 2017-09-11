@@ -9,11 +9,11 @@
 // Init
 // New Taxonomy
 define( 'ARGS', [
-	'hierarchical'		=>	true,
-	'query_var'			=>	true,
+	'hierarchical'		=>	TRUE,
+	'query_var'			=>	TRUE,
 	'rewrite'			=>	[ 'slug' => 'googlemaps' ],
-	'show_admin_column'	=>	true,
-	'show_ui'			=>	true,
+	'show_admin_column'	=>	TRUE,
+	'show_ui'			=>	TRUE,
 ] );
 
 register_taxonomy( 'googlemaps', [ 'geolocation' ], ARGS );
@@ -24,6 +24,7 @@ define( 'INSTAGRAM_TOKEN', '' );
 define( 'MAPS_KEY', '' );
 define( 'POSTS_PER_PAGE', 15 );
 define( 'POSTS_PER_SIDEBAR', 6 );
+define( 'RECAPTCHA_SECRET', '' );
 define( 'TEMPLATE_PATH', get_template_directory() . '/' );
 
 function codeman_wp_title( string $title, string $sep ): string {
@@ -56,38 +57,7 @@ function get_best_category( array $categories ) {;
 			];
 
 	unset( $category );
-	return false;
-}	// end function
-
-function get_subcategories( string $slug = NULL ): array {
-	if( is_null( $slug ) )
-		throw new Exception( 'Slug cannot be null.' );
-
-	$categories = [];
-	$parent = is_int( $slug ) ? $slug : get_category_by_slug( $slug );
-
-	$params = [
-		'exclude'		=>	0,
-		'hide_empty'	=>	false,
-		'order'			=>	'ASC',
-		'orderby'		=>	'name',
-		'parent'		=>	is_int( $slug ) ? $slug : $parent -> term_id,
-	];
-
-	foreach( get_categories( $params ) as $key => $category ) {
-		$categories[] = ( object ) [
-			'count'	=>	$category -> count,
-			'id'	=>	$category -> term_id,
-			'index'	=>	$key,
-			'name'	=>	$category -> name,
-			'parent'=>	$category -> category_parent,
-			'slug'	=>	$category -> slug,
-			'url'	=>	get_category_link( $category -> cat_ID ),
-		];
-	}	// end foreach
-	unset( $key, $category );
-
-	return $categories;
+	return FALSE;
 }	// end function
 
 function get_config( array $params = NULL ): array {
@@ -113,6 +83,7 @@ function get_config( array $params = NULL ): array {
 		'post__not_in'		=>	$is_singular ? [ get_the_ID() ] : NULL,
 		'post_status'		=>	'publish',
 		'posts_per_page'	=>	$params[ 'posts_per_page' ] ?? POSTS_PER_PAGE,
+		'post_type'			=>	$params[ 'post_type' ] ?? NULL,
 		's'					=>	$params[ 's' ] ?? NULL,
 		'tag'				=>	$params[ 'tag' ] ?? NULL,
 		'tax_query'	=>	isset( $params[ 'googlemaps' ] ) ? [
@@ -120,7 +91,7 @@ function get_config( array $params = NULL ): array {
 			[
 				'taxonomy'	=>	'googlemaps',
 				'field'		=>	'slug',
-				'include_children'	=>	false,
+				'include_children'	=>	FALSE,
 				'terms'		=>	$params[ 'googlemaps' ],
 				// 'operator'	=>	'IN',
 			],
@@ -142,12 +113,14 @@ function get_data( string $type = NULL, int $id = NULL ) {
 		$categories = [];
 		foreach( get_the_category( $id ) as $key => $category ) {
 			$categories[] = ( object ) [
-				'id'	=>	$category -> term_id,
-				'index'	=>	$key,
-				'name'	=>	$category -> name,
-				'parent'=>	$category -> category_parent,
-				'slug'	=>	$category -> slug,
-				'url'	=>	get_category_link( $category -> cat_ID ),
+				'count'			=>	$category -> count,
+				'description'	=>	$category -> description,
+				'id'			=>	$category -> term_id,
+				'index'			=>	$key,
+				'name'			=>	$category -> name,
+				'parent'		=>	$category -> category_parent,
+				'slug'			=>	$category -> slug,
+				'url'			=>	get_category_link( $category -> cat_ID ),
 			];
 		}	// end foreach
 		unset( $key, $category );
@@ -155,6 +128,23 @@ function get_data( string $type = NULL, int $id = NULL ) {
 	}	// end elseif
 
 	return NULL;
+}	// end function
+
+function get_ip(): string {
+    if( getenv( 'HTTP_CLIENT_IP' ) )
+        return getenv( 'HTTP_CLIENT_IP' );
+    elseif( getenv( 'HTTP_X_FORWARDED_FOR' ) )
+        return getenv( 'HTTP_X_FORWARDED_FOR' );
+    elseif( getenv( 'HTTP_X_FORWARDED' ) )
+        return getenv( 'HTTP_X_FORWARDED' );
+    elseif( getenv( 'HTTP_FORWARDED_FOR' ) )
+        return getenv( 'HTTP_FORWARDED_FOR' );
+    elseif( getenv( 'HTTP_FORWARDED' ) )
+       return getenv( 'HTTP_FORWARDED' );
+    elseif( getenv( 'REMOTE_ADDR' ) )
+        return getenv( 'REMOTE_ADDR' );
+    else
+        return 'unknown';
 }	// end function
 
 function get_jwplayer( string $service = NULL ) {
@@ -166,10 +156,10 @@ function get_jwplayer( string $service = NULL ) {
 }	// end function
 
 function get_gallery() {
-	$gallery = get_post_gallery( get_the_ID(), false );
+	$gallery = get_post_gallery( get_the_ID(), FALSE );
 
 	if( ! $gallery )
-		return false;
+		return FALSE;
 
 	$gallery = ( object ) [
 		'ids'		=>	explode( ',', $gallery[ 'ids' ] ),
@@ -211,7 +201,7 @@ function get_open_graph() {
 	if( is_single() )
 		return get_publications( [ 'p' => get_the_ID() ] ) -> data[ 0 ];
 
-	return false;
+	return FALSE;
 }	// end function
 
 function get_publications( array $query = NULL ): stdClass {
@@ -225,7 +215,7 @@ function get_publications( array $query = NULL ): stdClass {
 			// TODO: Check
 			// 'author'	=>	get_the_author( 1 ),
 			'categories'=>	get_data( 'category', $post -> ID ),
-			'content'	=>	strip_tags( trim( strstr( $post -> post_content, '<!--more-->', true ) ) ),
+			'content'	=>	strip_tags( trim( strstr( $post -> post_content, '<!--more-->', TRUE ) ) ),
 			'custom'	=>	[],
 			'date'		=>	get_the_date( '', $post -> ID ),
 			'field'		=>	( object ) [
@@ -284,13 +274,10 @@ function get_publications_for( array $params = NULL ): stdClass {
 }	// end function
 
 function get_search( bool $echo = TRUE ) {
-	if( ! isset( $_GET[ 's' ] ) )
-		return;
-
 	if( ! $echo )
-		return htmlentities( $_GET[ 's' ] );
+		return htmlentities( $_GET[ 's' ] ?? '' );
 
-	echo htmlentities( $_GET[ 's' ] );
+	echo htmlentities( $_GET[ 's' ] ?? '' );
 }	// end function
 
 function get_subterms( string $slug = NULL, string $taxonomy = NULL ): array {
@@ -304,25 +291,26 @@ function get_subterms( string $slug = NULL, string $taxonomy = NULL ): array {
 
 	$params = [
 		'exclude'		=>	0,
-		'hide_empty'	=>	false,
+		'hide_empty'	=>	FALSE,
 		'order'			=>	'ASC',
 		'orderby'		=>	'name',
 		'parent'		=>	is_int( $slug ) ? $slug : $parent -> term_id,
 		'taxonomy'		=>	$taxonomy,
 	];
 
-	foreach( get_terms( $params ) as $key => $category ) {
+	foreach( get_terms( $params ) as $key => $term ) {
 		$terms[] = ( object ) [
-			'count'	=>	$category -> count,
-			'id'	=>	$category -> term_id,
-			'index'	=>	$key,
-			'name'	=>	$category -> name,
-			'parent'=>	$category -> category_parent,
-			'slug'	=>	$category -> slug,
-			'url'	=>	get_category_link( $category -> term_id ),
+			'count'			=>	$term -> count,
+			'description'	=>	$term -> description,
+			'id'			=>	$term -> term_id,
+			'index'			=>	$key,
+			'name'			=>	$term -> name,
+			'parent'		=>	$term -> category_parent,
+			'slug'			=>	$term -> slug,
+			'url'			=>	get_category_link( $term -> term_id ),
 		];
 	}	// end foreach
-	unset( $key, $category );
+	unset( $key, $term );
 
 	return $terms;
 }	// end function
@@ -358,7 +346,7 @@ function get_url( bool $echo = TRUE ) {
 function instagram() {
 	$output = [
 		'message'	=>	'Bad request',
-		'result'	=>	'error',
+		'status'	=>	'error',
 	];
 
 	if( $_SERVER[ 'REQUEST_METHOD' ] === 'GET' ) {
@@ -372,7 +360,7 @@ function instagram() {
 	}	// end if
 
 	header( 'Content-Type: application/json' );
-	echo json_encode( $output );
+	echo json_encode( $output, JSON_PRETTY_PRINT );
 	exit;
 }	// end function
 
@@ -387,14 +375,14 @@ function is_draft(): bool {
 function load_more() {
 	$output = [
 		'message'	=>	'Bad request',
-		'result'	=>	'error',
+		'status'	=>	'error',
 	];
 
 	if(
 		$_SERVER[ 'REQUEST_METHOD' ] === 'GET' &&
 		isset( $_GET[ 'page' ] ) &&
 		! empty( $_GET[ 'page' ] ) &&
-		// $_GET[ 'page' ] > 1	&&
+		$_GET[ 'page' ] > 1	&&
 		( ( $_GET[ 'page' ] - 1 ) * POSTS_PER_PAGE ) - wp_count_posts() -> publish < 0
 	) {
 		$categories = explode( ',', $_GET[ 'category' ] ?? NULL );
@@ -408,24 +396,25 @@ function load_more() {
 
 		$data = get_publications( get_config( [
 			'category__and'		=>	isset( $_GET[ 'category' ] ) ? $ids : NULL,
-			'paged'				=>	$_GET[ 'page' ],
+			'paged'				=>	intval( $_GET[ 'page' ] ),
 			'posts_per_page'	=>	POSTS_PER_PAGE,
+			's'					=>	isset( $_GET[ 's' ] ) ? get_search( FALSE ) : NULL,
 		] ) );
 
 		$output = [
 			'data'	=>	$data -> data,
-			'result'=>	'success',
+			'status'=>	'success',
 			'rows'	=>	$data -> rows,
 			'total'	=>	intval( wp_count_posts() -> publish ),
 		];
 	}	// end if
 
 	header( 'Content-Type: application/json' );
-	echo json_encode( $output );
+	echo json_encode( $output, JSON_PRETTY_PRINT );
 	exit;
 }	// end function
 
-function my_page_menu_args( array $args ) {
+function my_page_menu_args( array $args ): array {
 	$args[ 'show_home' ] = TRUE;
 	return $args;
 }	// end function
@@ -445,10 +434,200 @@ function my_post_queries( WP_Query $query ) {
 	}	// end if
 }	// end function
 
+function new_contact() {
+	header( 'Content-Type: application/json' );
+	
+	$output = [
+		'message'	=>	'Bad request',
+		'status'	=>	'error',
+	];
+
+	if(
+		$_SERVER[ 'REQUEST_METHOD' ] === 'POST' &&
+		( isset( $_POST[ 'name' ] ) && ! empty( $_POST[ 'name' ] ) ) &&
+		// ( isset( $_POST[ 'tel' ] ) && ! empty( $_POST[ 'tel' ] ) ) &&
+		( isset( $_POST[ 'email' ] ) && ! empty( $_POST[ 'email' ] ) ) &&
+		( isset( $_POST[ 'subject' ] ) && ! empty( $_POST[ 'subject' ] ) ) &&
+		( isset( $_POST[ 'message' ] ) && ! empty( $_POST[ 'message' ] ) ) &&
+		( isset( $_POST[ 'g-recaptcha-response' ] ) && ! empty( $_POST[ 'g-recaptcha-response' ] ) ) &&
+		isset( $_POST[ 'privacy' ] )
+	) {
+		try {
+			$input = ( object ) [
+				'name'		=>	trim( $_POST[ 'name' ] ),
+				'tel'		=>	trim( $_POST[ 'tel' ] ?? '' ),
+				'email'		=>	trim( $_POST[ 'email' ] ),
+				'subject'	=>	trim( $_POST[ 'subject' ] ),
+				'message'	=>	trim( $_POST[ 'message' ] ),
+				'g-recaptcha-response'	=>	trim( $_POST[ 'g-recaptcha-response' ] ),
+			];
+
+			// reCAPTCHA
+			recaptcha( $input -> { 'g-recaptcha-response' } );
+
+			// Validations
+
+			// Notifications
+			send_mail( [
+				'to'		=>	[ $input -> email ],
+				'template'	=>	'thanks.html',
+				'subject'	=>	'Gracias por escribir',
+				'data'		=>	( array ) $input,
+			] );
+
+			send_mail( [
+				'to'		=>	[ 'gustavo@codeman.company' ],
+				'template'	=>	'delivery.html',
+				'subject'	=>	'💡 Tienes un nuevo contacto en tu sitio web',
+				'data'		=>	( array ) $input,
+			] );
+
+			// Database
+			global $wpdb;
+			$wpdb -> insert( 'wp_contacts', [
+				'name'		=>	$input -> name,
+				'tel'		=>	$input -> tel,
+				'email'		=>	$input -> email,
+				'subject'	=>	$input -> subject,
+				'message'	=>	$input -> message,
+				'ip'	=>	get_ip(),
+			], [ '%s', '%s', '%s', '%s', '%s', '%s' ] );
+
+			$output = [
+				'message'	=>	'Message sent',
+				'status'	=>	'success',
+			];
+		}	// end try
+		catch( Exception $error ) {
+			$output = [
+				'message'	=>	$error -> getMessage(),
+				'status'	=>	'error',
+			];
+		}	// end catch
+	}	// end function
+
+	echo json_encode( $output, JSON_PRETTY_PRINT );
+	exit;
+}	// end function
+
+function new_subscription() {
+	header( 'Content-Type: application/json' );
+	
+	$output = [
+		'message'	=>	'Bad request',
+		'status'	=>	'error',
+	];
+
+	if(
+		$_SERVER[ 'REQUEST_METHOD' ] === 'POST' &&
+		( isset( $_POST[ 'name' ] ) && ! empty( $_POST[ 'name' ] ) ) &&
+		( isset( $_POST[ 'email' ] ) && ! empty( $_POST[ 'email' ] ) ) &&
+		( isset( $_POST[ 'g-recaptcha-response' ] ) && ! empty( $_POST[ 'g-recaptcha-response' ] ) ) &&
+		isset( $_POST[ 'privacy' ] )
+	) {
+		try {
+			$input = ( object ) [
+				'name'		=>	trim( $_POST[ 'name' ] ),
+				'email'		=>	trim( $_POST[ 'email' ] ),
+				'g-recaptcha-response'	=>	trim( $_POST[ 'g-recaptcha-response' ] ),
+			];
+
+			// reCAPTCHA
+			recaptcha( $input -> { 'g-recaptcha-response' } );
+
+			// Validations
+
+			// Notifications
+			send_mail( [
+				'to'		=>	[ $input -> email ],
+				'template'	=>	'ticket.html',
+				'subject'	=>	'Gracias por suscribirte',
+				'data'		=>	( array ) $input,
+			] );
+
+			send_mail( [
+				'to'		=>	[ 'gustavo@codeman.company' ],
+				'template'	=>	'subscription.html',
+				'subject'	=>	'💡 Tienes un nuevo suscriptor en tu sitio web',
+				'data'		=>	( array ) $input,
+			] );
+
+			// Database
+			global $wpdb;
+			$wpdb -> insert( 'wp_mailing', [
+				'name'	=>	$input -> name,
+				'email'	=>	$input -> email,
+				'ip'	=>	get_ip(),
+			], [ '%s', '%s', '%s' ] );
+
+			$output = [
+				'message'	=>	'Successful subscription',
+				'status'	=>	'success',
+			];
+		}	// end try
+		catch( Exception $error ) {
+			$output = [
+				'message'	=>	$error -> getMessage(),
+				'status'	=>	'error',
+			];
+		}	// end catch
+	}	// end function
+
+	echo json_encode( $output, JSON_PRETTY_PRINT );
+	exit;
+}	// end function
+
+function recaptcha( string $response = NULL ) {
+	if( ! is_string( $response ) )
+		throw new Exception( 'Invalid secret.' );
+
+	$context = stream_context_create( [
+		'http'	=>	[
+			'content'	=>	http_build_query( [
+				'secret'	=>	RECAPTCHA_SECRET,
+				'response'	=>	$response,
+			] ),
+			'header'	=>	'Content-type: application/x-www-form-urlencoded',
+			'method'	=>	'POST',
+		]
+	] );
+	$request = file_get_contents( 'https://www.google.com/recaptcha/api/siteverify', FALSE, $context );
+	$request = json_decode( $request );
+
+	if( ! $request -> success )
+		throw new Exception( 'Is robot. We take legal actions.' );
+}	// end function
+
+function send_mail( array $params = NULL ) {
+	if(
+		! is_array( $params ) ||
+		! is_array( $params[ 'to' ] ?? NULL ) ||
+		! is_string( $params[ 'subject' ] ?? NULL ) ||
+		! is_string( $params[ 'template' ] ?? NULL ) ||
+		! is_array( $params[ 'data' ] ?? NULL )
+	)
+		throw new Exception( 'The parameters are incorrect.' );
+
+	foreach( $params[ 'to' ] as $email )
+		if( ! filter_var( $email, FILTER_VALIDATE_EMAIL ) )
+			throw new Exception( 'Invalid emails.' );
+		
+	unset( $email );
+
+	$html = file_get_contents( TEMPLATE_PATH . 'template/' . pathinfo( $params[ 'template' ], PATHINFO_BASENAME ) );
+
+	foreach ( $params[ 'data' ] as $key => $value )
+		$html = str_replace( '{' . $key . '}', strip_tags( $value ), $html );
+
+	unset( $key, $value );
+
+	wp_mail( $params[ 'to' ], $params[ 'subject' ], $html );
+}	// end function
+
 function send_smtp_email( PHPMailer $phpmailer ) {
 	$phpmailer -> isSMTP();
 	$phpmailer -> Host = 'email-smtp.us-east-1.amazonaws.com';
-	$phpmailer -> SMTPAuth = true;
+	$phpmailer -> SMTPAuth = TRUE;
 	$phpmailer -> Port = '587';
 	$phpmailer -> Username = '';
 	$phpmailer -> Password = '';
@@ -457,13 +636,22 @@ function send_smtp_email( PHPMailer $phpmailer ) {
 	$phpmailer -> FromName = 'WordPress';
 }	// end function
 
+function wpdocs_set_html_mail_content_type(): string {
+	return 'text/html';
+}	// end function
+
 add_action( 'phpmailer_init', 'send_smtp_email' );
 add_action( 'pre_get_posts', 'my_post_queries' );
 add_action( 'wp_ajax_instagram', 'instagram' );
 add_action( 'wp_ajax_nopriv_instagram', 'instagram' );
 add_action( 'wp_ajax_load_more', 'load_more' );
 add_action( 'wp_ajax_nopriv_load_more', 'load_more' );
+add_action( 'wp_ajax_new_contact', 'new_contact' );
+add_action( 'wp_ajax_nopriv_new_contact', 'new_contact' );
+add_action( 'wp_ajax_new_subscription', 'new_subscription' );
+add_action( 'wp_ajax_nopriv_new_subscription', 'new_subscription' );
 
+add_filter( 'wp_mail_content_type', 'wpdocs_set_html_mail_content_type' );
 add_filter( 'wp_page_menu_args', 'my_page_menu_args' );
 add_filter( 'wp_title', 'codeman_wp_title', 10, 2 );
 

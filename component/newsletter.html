@@ -1,0 +1,25 @@
+<form name="form" novalidate="novalidate">
+	<label for="name">Nombre: *</label>
+	<input id="name" maxlength="100" name="name" placeholder="Nombre" required="required" type="text" data-ng-model="input.name" data-ng-pattern="validation.contact.name" />
+	<p data-ng-show="form.name.$invalid &amp;&amp; ! form.name.$pristine">Escribe tu nombre.</p>
+
+	<label for="email">Correo electrónico: *</label>
+	<input id="email" maxlength="60" name="email" placeholder="Correo electrónico" required="required" type="email" data-ng-model="input.email" data-ng-pattern="validation.contact.email" />
+	<p data-ng-show="form.email.$invalid &amp;&amp; ! form.email.$pristine">Escribe tu email.</p>
+
+	<label for="privacy">
+		<input id="privacy" name="privacy" required="required" type="checkbox" data-ng-model="input.privacy" /> Acepto las condiciones del servicio y la política de privacidad de esta página.
+	</label>
+
+	<br />
+
+	<div class="g-recaptcha" data-sitekey="6LemrxcTAAAAADw2IaqCY0-arquCK1qcGNprv34E"></div>
+	<p data-ng-show="recaptcha">Completa el reCAPTCHA por favor.</p>
+
+	{{input|json}}
+
+	<button type="submit" data-ng-click="action()" data-ng-disabled="form.$pristine || loading">
+		<span data-ng-show="loading"><span class="fa fa-spinner fa-pulse"></span> Enviando</span>
+		<span data-ng-hide="loading">Enviar Mensaje</span>
+	</button>
+</form>
