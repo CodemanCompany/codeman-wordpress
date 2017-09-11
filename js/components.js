@@ -2,8 +2,10 @@ app.component( 'contact', {
 	"controller":	[ '$scope', 'request', function( $scope, request ) {
 		$scope.loading = false;
 
-		grecaptcha.render( 'g-recaptcha-contact', {
-			"sitekey": "6LezZy4UAAAAAPCQYl0U63f-rvAsI_phC6pGLVVv",
+		angular.element( document ).ready( function () {
+			grecaptcha.render( 'g-recaptcha-contact', {
+				"sitekey": "6LezZy4UAAAAAPCQYl0U63f-rvAsI_phC6pGLVVv",
+			} );
 		} );
 
 		$scope.action = function() {
@@ -49,8 +51,10 @@ app.component( 'newsletter', {
 	"controller":	[ '$scope', 'request', function( $scope, request ) {
 		$scope.loading = false;
 
-		grecaptcha.render( 'g-recaptcha-newsletter', {
-			"sitekey": "6LezZy4UAAAAAPCQYl0U63f-rvAsI_phC6pGLVVv",
+		angular.element( document ).ready( function () {
+			grecaptcha.render( 'g-recaptcha-newsletter', {
+				"sitekey": "6LezZy4UAAAAAPCQYl0U63f-rvAsI_phC6pGLVVv",
+			} );
 		} );
 
 		$scope.action = function() {

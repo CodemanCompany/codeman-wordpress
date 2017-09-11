@@ -1,7 +1,7 @@
 <!-- Scripts -->
 <!-- <script src="https://maps.googleapis.com/maps/api/js?key=CODEMAN_API_KEY"></script>
 <script src="js/map.min.js"></script> -->
-<script src="https://www.google.com/recaptcha/api.js"></script>
+<script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
 <script src="<?php bloginfo( 'template_url' );?>/node_modules/jquery/dist/jquery.min.js"></script>
 <script src="<?php bloginfo( 'template_url' );?>/node_modules/@fancyapps/fancybox/dist/jquery.fancybox.min.js"></script>
 <script src="<?php bloginfo( 'template_url' );?>/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
