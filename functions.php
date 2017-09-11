@@ -9,11 +9,11 @@
 // Init
 // New Taxonomy
 define( 'ARGS', [
-	'hierarchical'		=>	true,
-	'query_var'			=>	true,
+	'hierarchical'		=>	TRUE,
+	'query_var'			=>	TRUE,
 	'rewrite'			=>	[ 'slug' => 'googlemaps' ],
-	'show_admin_column'	=>	true,
-	'show_ui'			=>	true,
+	'show_admin_column'	=>	TRUE,
+	'show_ui'			=>	TRUE,
 ] );
 
 register_taxonomy( 'googlemaps', [ 'geolocation' ], ARGS );
@@ -57,7 +57,7 @@ function get_best_category( array $categories ) {;
 			];
 
 	unset( $category );
-	return false;
+	return FALSE;
 }	// end function
 
 function get_config( array $params = NULL ): array {
@@ -91,7 +91,7 @@ function get_config( array $params = NULL ): array {
 			[
 				'taxonomy'	=>	'googlemaps',
 				'field'		=>	'slug',
-				'include_children'	=>	false,
+				'include_children'	=>	FALSE,
 				'terms'		=>	$params[ 'googlemaps' ],
 				// 'operator'	=>	'IN',
 			],
@@ -156,10 +156,10 @@ function get_jwplayer( string $service = NULL ) {
 }	// end function
 
 function get_gallery() {
-	$gallery = get_post_gallery( get_the_ID(), false );
+	$gallery = get_post_gallery( get_the_ID(), FALSE );
 
 	if( ! $gallery )
-		return false;
+		return FALSE;
 
 	$gallery = ( object ) [
 		'ids'		=>	explode( ',', $gallery[ 'ids' ] ),
@@ -201,7 +201,7 @@ function get_open_graph() {
 	if( is_single() )
 		return get_publications( [ 'p' => get_the_ID() ] ) -> data[ 0 ];
 
-	return false;
+	return FALSE;
 }	// end function
 
 function get_publications( array $query = NULL ): stdClass {
@@ -215,7 +215,7 @@ function get_publications( array $query = NULL ): stdClass {
 			// TODO: Check
 			// 'author'	=>	get_the_author( 1 ),
 			'categories'=>	get_data( 'category', $post -> ID ),
-			'content'	=>	strip_tags( trim( strstr( $post -> post_content, '<!--more-->', true ) ) ),
+			'content'	=>	strip_tags( trim( strstr( $post -> post_content, '<!--more-->', TRUE ) ) ),
 			'custom'	=>	[],
 			'date'		=>	get_the_date( '', $post -> ID ),
 			'field'		=>	( object ) [
@@ -291,7 +291,7 @@ function get_subterms( string $slug = NULL, string $taxonomy = NULL ): array {
 
 	$params = [
 		'exclude'		=>	0,
-		'hide_empty'	=>	false,
+		'hide_empty'	=>	FALSE,
 		'order'			=>	'ASC',
 		'orderby'		=>	'name',
 		'parent'		=>	is_int( $slug ) ? $slug : $parent -> term_id,
@@ -472,14 +472,14 @@ function new_contact() {
 				'to'		=>	[ $input -> email ],
 				'template'	=>	'thanks.html',
 				'subject'	=>	'Gracias por escribir',
-				'data'		=>	( array ) $input
+				'data'		=>	( array ) $input,
 			] );
 
 			send_mail( [
 				'to'		=>	[ 'gustavo@codeman.company' ],
 				'template'	=>	'delivery.html',
 				'subject'	=>	'💡 Tienes un nuevo contacto en tu sitio web',
-				'data'		=>	( array ) $input
+				'data'		=>	( array ) $input,
 			] );
 
 			// Database
@@ -542,14 +542,14 @@ function new_subscription() {
 				'to'		=>	[ $input -> email ],
 				'template'	=>	'ticket.html',
 				'subject'	=>	'Gracias por suscribirte',
-				'data'		=>	( array ) $input
+				'data'		=>	( array ) $input,
 			] );
 
 			send_mail( [
 				'to'		=>	[ 'gustavo@codeman.company' ],
 				'template'	=>	'subscription.html',
 				'subject'	=>	'💡 Tienes un nuevo suscriptor en tu sitio web',
-				'data'		=>	( array ) $input
+				'data'		=>	( array ) $input,
 			] );
 
 			// Database
@@ -591,7 +591,7 @@ function recaptcha( string $response = NULL ) {
 			'method'	=>	'POST',
 		]
 	] );
-	$request = file_get_contents( 'https://www.google.com/recaptcha/api/siteverify', false, $context );
+	$request = file_get_contents( 'https://www.google.com/recaptcha/api/siteverify', FALSE, $context );
 	$request = json_decode( $request );
 
 	if( ! $request -> success )
@@ -627,7 +627,7 @@ function send_mail( array $params = NULL ) {
 function send_smtp_email( PHPMailer $phpmailer ) {
 	$phpmailer -> isSMTP();
 	$phpmailer -> Host = 'email-smtp.us-east-1.amazonaws.com';
-	$phpmailer -> SMTPAuth = true;
+	$phpmailer -> SMTPAuth = TRUE;
 	$phpmailer -> Port = '587';
 	$phpmailer -> Username = '';
 	$phpmailer -> Password = '';
