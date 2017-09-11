@@ -1,5 +1,5 @@
-<section class="container">
-	<div class="row">
+<section>
+	<div class="container">
 		<?php
 			try {
 				foreach( get_publications_for( [ 'section' => 'home' ] ) -> data as $post ):?>
@@ -25,8 +25,8 @@
 	</div>
 </aside>
 
-<article>
+<section>
 	<div class="container">
 		<contact></contact>
 	</div>
-</article>
+</section>

@@ -83,6 +83,7 @@ function get_config( array $params = NULL ): array {
 		'post__not_in'		=>	$is_singular ? [ get_the_ID() ] : NULL,
 		'post_status'		=>	'publish',
 		'posts_per_page'	=>	$params[ 'posts_per_page' ] ?? POSTS_PER_PAGE,
+		'post_type'			=>	$params[ 'post_type' ] ?? NULL,
 		's'					=>	$params[ 's' ] ?? NULL,
 		'tag'				=>	$params[ 'tag' ] ?? NULL,
 		'tax_query'	=>	isset( $params[ 'googlemaps' ] ) ? [
@@ -397,7 +398,7 @@ function load_more() {
 			'category__and'		=>	isset( $_GET[ 'category' ] ) ? $ids : NULL,
 			'paged'				=>	intval( $_GET[ 'page' ] ),
 			'posts_per_page'	=>	POSTS_PER_PAGE,
-			's'					=>	isset( $_GET[ 's' ] ) ? strip_tags( $_GET[ 's' ] ) : NULL,
+			's'					=>	isset( $_GET[ 's' ] ) ? get_search( FALSE ) : NULL,
 		] ) );
 
 		$output = [

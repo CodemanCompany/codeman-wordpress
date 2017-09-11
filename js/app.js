@@ -25,10 +25,14 @@ var app = angular.module( 'app', [ 'ngSanitize', 'yaokiski' ] )
 		"page":		2
 	};
 
-	$scope.loadMore = function( category ) {
+	$scope.loadMore = function( params ) {
 		$scope.loading = true;
 
-		data.category = category;
+		if( params && params.categories )
+			data.category = params.categories;
+
+		if( params && params.s )
+			data.s = params.s;
 
 		request.get( request.url.controller.wordpress, data )
 		.then( function( response ) {

@@ -1,6 +1,5 @@
 <?php
 var_dump( CATEGORY );
-var_dump( strip_tags('') ?? 'A' );
 ?>
 <div class="container">
 	<h1><?php echo CATEGORY[ 'name' ];?></h1>
@@ -25,7 +24,7 @@ var_dump( strip_tags('') ?? 'A' );
 
 			<aside>
 				<div class="text-center">
-					<button type="button" data-ng-click="loadMore( '<?php echo CATEGORY[ 'slug' ];?>' )" data-ng-hide="loading">Ver más</button>
+					<button type="button" data-ng-click="loadMore( { 'categories': '<?php echo CATEGORY[ 'slug' ];?>' } )" data-ng-hide="loading">Ver más</button>
 					<span class="fa fa-circle-o-notch fa-spin loading" data-ng-show="loading"></span>
 				</div>
 			</aside>

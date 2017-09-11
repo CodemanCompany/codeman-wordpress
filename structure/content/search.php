@@ -1,20 +1,32 @@
-<article>
+<?php $results = get_publications_for( [ 's' => get_search( FALSE ), 'post_type' => [ 'post' ] ] ) -> data;?>
+<section>
 	<div class="container">
 		<h2>Resultados de búsqueda por: <span class="text-muted"><?php get_search();?></span></h2>
 
-		<?php if( have_posts() ): while( have_posts() ): the_post(); if( 'post' == get_post_type() ):?>
-			<article>
-				<img class="img-responsive" src="<?php get_image();?>" alt="" />
-				<h2><?php the_title();?></h2>
-				<p><strong><?php the_category( ' ' );?></strong></p>
-				<p><span class="text-muted"><?php the_date();?></span></p>
-				<p><?php the_content( '', FALSE, '' );?></p>
-				<a href="<?php get_url();?>">link</a>
-			</article>
-		<?php endif; endwhile;
-		else: echo '<p>No se encontraron resultados para la búsqueda.</p>'; endif;?>
-		<hr />
-		<div class="nav-previous text-left"><?php next_posts_link( 'Entradas anteriores' ); ?></div>
-		<div class="nav-next text-right"><?php previous_posts_link( 'Entradas recientes' ); ?></div>
+		<?php
+			try {
+				foreach( $results as $post ):?>
+					<article><a href="#"><pre><?php var_dump( $post );?></pre></a></article>
+				<?php endforeach;
+				unset( $post );
+			}	// end try
+			catch( Exception $error ) {
+				echo $error -> getMessage();
+			}	// end catch
+		?>
+		<?php if( count( $results ) === 0 ):?>
+			<p>No se encontraron resultados para la búsqueda.</p>
+		<?php endif;?>
+
+		<article data-ng-repeat="post in posts" data-ng-click="go( post.url )">
+			<a href="#">{{post|json}}</a>
+		</article>
 	</div>
-</article>
+</section>
+
+<aside>
+	<div class="container text-center">
+		<button type="button" data-ng-click="loadMore( { 's': '<?php echo get_search( FALSE );?>' } )" data-ng-hide="loading">Ver más</button>
+		<span class="fa fa-circle-o-notch fa-spin loading" data-ng-show="loading"></span>
+	</div>
+</aside>
