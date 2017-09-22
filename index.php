@@ -3,7 +3,7 @@ define( 'IS_404', is_404() )
 define( 'IS_CATEGORY', is_category() );
 define( 'IS_DRAFT', is_draft() );
 define( 'IS_HOME', is_home() );
-define( 'IS_MOBILE', wp_is_mobile() );
+define( 'IS_MOBILE', detect_is_mobile() );
 define( 'IS_PAGE', is_page() );
 define( 'IS_SEARCH', is_search() );
 define( 'IS_SINGLE', is_single() );
