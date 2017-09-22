@@ -37,6 +37,35 @@ function codeman_wp_title( string $title, string $sep ): string {
 	return $title;
 }	// end function
 
+function detect_is_mobile(): bool {
+	static $is_mobile;
+
+	if( isset( $is_mobile ) )
+		return FALSE;
+
+	if( empty( $_SERVER[ 'HTTP_USER_AGENT' ] ) )
+		$is_mobile = FALSE;
+	elseif(
+		strpos( $_SERVER[ 'HTTP_USER_AGENT' ], 'Android' ) !== FALSE ||
+		strpos( $_SERVER[ 'HTTP_USER_AGENT' ], 'Silk/' ) !== FALSE ||
+		strpos( $_SERVER[ 'HTTP_USER_AGENT' ], 'Kindle' ) !== FALSE ||
+		strpos( $_SERVER[ 'HTTP_USER_AGENT' ], 'BlackBerry' ) !== FALSE ||
+		strpos( $_SERVER[ 'HTTP_USER_AGENT' ], 'Opera Mini' ) !== FALSE
+	)
+		$is_mobile = TRUE;
+	elseif(
+		strpos( $_SERVER[ 'HTTP_USER_AGENT' ], 'Mobile' ) !== FALSE &&
+		strpos( $_SERVER[ 'HTTP_USER_AGENT' ], 'iPad' ) == FALSE
+	)
+		$is_mobile = TRUE;
+	elseif( strpos( $_SERVER[ 'HTTP_USER_AGENT' ], 'iPad' ) !== FALSE )
+		$is_mobile = FALSE;
+	else
+		$is_mobile = FALSE;
+
+	return $is_mobile;
+}	// end function
+
 // TODO: get_address()
 
 function get_best_category( array $categories ) {;
