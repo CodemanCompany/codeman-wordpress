@@ -1,5 +1,5 @@
 <?php
-define( 'IS_404', is_404() )
+define( 'IS_404', is_404() );
 define( 'IS_CATEGORY', is_category() );
 define( 'IS_DRAFT', is_draft() );
 define( 'IS_HOME', is_home() );
