@@ -244,7 +244,7 @@ function get_publications( array $query = NULL ): stdClass {
 			// TODO: Check
 			// 'author'	=>	get_the_author( 1 ),
 			'categories'=>	get_data( 'category', $post -> ID ),
-			'content'	=>	strip_tags( trim( strstr( $post -> post_content, '<!--more-->', TRUE ) ) ),
+			'content'	=>	htmlentities( strip_tags( trim( strstr( $post -> post_content, '<!--more-->', TRUE ) ) ) ),
 			'custom'	=>	[],
 			'date'		=>	get_the_date( '', $post -> ID ),
 			'field'		=>	( object ) [
@@ -266,7 +266,7 @@ function get_publications( array $query = NULL ): stdClass {
 			'status'	=>	$post -> post_status,
 			'tags'		=>	get_tags_codeman( $post -> ID, 'post_tag' ),
 			'googlemaps'	=>	get_tags_codeman( $post -> ID, 'googlemaps' ),
-			'title'		=>	$post -> post_title,
+			'title'		=>	htmlentities( strip_tags( trim( $post -> post_title ) ) ),
 			'url'		=>	get_permalink( $post -> ID ),
 		];
 		// TODO: Check Remove
