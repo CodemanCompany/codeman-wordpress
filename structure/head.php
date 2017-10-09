@@ -12,7 +12,7 @@
 	<meta property="og:image" content="<?php echo $og -> images -> medium_large;?>" />
 	<meta property="og:title" content="<?php echo $og -> title;?>" />
 	<meta property="og:url" content="<?php echo $og -> url;?>" />
-<?php elseif( IS_CATEGORY ): define( 'CATEGORY', ( array ) get_data( 'category' )[ 0 ] );?>
+<?php elseif( IS_CATEGORY ): define( 'CATEGORY', ( array ) get_data( 'category', get_cat_ID( single_cat_title( '', false ) ) )[ 0 ] );?>
 	<meta property="og:description" content="<?php echo CATEGORY[ 'description' ];?>" />
 	<meta property="og:image" content="" />
 	<meta property="og:title" content="<?php single_cat_title( '', true );?>" />

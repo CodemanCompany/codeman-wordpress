@@ -135,28 +135,34 @@ function get_custom( array $params = NULL ) {
 	return is_null( $store = get_post_custom_values( $params[ 'key' ], $params[ 'id' ] ) ) ? NULL : $store[ 0 ];
 }	// end function
 
-function get_data( string $type = NULL, int $id = NULL ) {
+function get_data( string $type = NULL, int $id = NULL ): array {
 	if( is_null( $type ) )
 		throw new Exception( 'Wrong type.' );
-	elseif( $type === 'category' ) {
-		$categories = [];
-		foreach( get_the_category( $id ) as $key => $category ) {
-			$categories[] = ( object ) [
-				'count'			=>	$category -> count,
-				'description'	=>	$category -> description,
-				'id'			=>	$category -> term_id,
-				'index'			=>	$key,
-				'name'			=>	$category -> name,
-				'parent'		=>	$category -> category_parent,
-				'slug'			=>	$category -> slug,
-				'url'			=>	get_category_link( $category -> cat_ID ),
-			];
-		}	// end foreach
-		unset( $key, $category );
-		return $categories;
-	}	// end elseif
+	if( is_null( $id ) )
+		throw new Exception( 'ID is required.' );
 
-	return NULL;
+	$data = [];
+
+	if( $type === 'categories' )
+		$query = get_the_category( $id );
+	elseif( $type === 'category' )
+		$query = [ get_category( $id ) ];
+
+	foreach( $query as $key => $category ) {
+		$data[] = ( object ) [
+			'count'			=>	$category -> count,
+			'description'	=>	$category -> description,
+			'id'			=>	$category -> term_id,
+			'index'			=>	$key,
+			'name'			=>	$category -> name,
+			'parent'		=>	$category -> category_parent,
+			'slug'			=>	$category -> slug,
+			'url'			=>	get_category_link( $category -> cat_ID ),
+		];
+	}	// end foreach
+	unset( $key, $category );
+
+	return $data;
 }	// end function
 
 function get_ip(): string {
@@ -323,7 +329,7 @@ function get_subterms( string $slug = NULL, string $taxonomy = NULL ): array {
 		'hide_empty'	=>	FALSE,
 		'order'			=>	'ASC',
 		'orderby'		=>	'name',
-		'parent'		=>	is_int( $slug ) ? $slug : $parent -> term_id,
+		'parent'		=>	is_int( $slug ) ? $slug : intval( $slug ),
 		'taxonomy'		=>	$taxonomy,
 	];
 
@@ -414,28 +420,27 @@ function load_more() {
 		$_GET[ 'page' ] > 1	&&
 		( ( $_GET[ 'page' ] - 1 ) * POSTS_PER_PAGE ) - wp_count_posts() -> publish < 0
 	) {
-		$categories = explode( ',', $_GET[ 'category' ] ?? NULL );
+		try {
+			$data = get_publications( get_config( [
+				'category__and'		=>	$_GET[ 'category' ] ?? NULL,
+				'paged'				=>	intval( $_GET[ 'page' ] ),
+				'posts_per_page'	=>	POSTS_PER_PAGE,
+				's'					=>	isset( $_GET[ 's' ] ) ? get_search( FALSE ) : NULL,
+			] ) );
 
-		$ids = [];
-		foreach( $categories as $category ) {
-			$cat = get_category_by_slug( $category );
-			$ids[] = $cat -> term_id;
-		}	// end foreach
-		unset( $category );
-
-		$data = get_publications( get_config( [
-			'category__and'		=>	isset( $_GET[ 'category' ] ) ? $ids : NULL,
-			'paged'				=>	intval( $_GET[ 'page' ] ),
-			'posts_per_page'	=>	POSTS_PER_PAGE,
-			's'					=>	isset( $_GET[ 's' ] ) ? get_search( FALSE ) : NULL,
-		] ) );
-
-		$output = [
-			'data'	=>	$data -> data,
-			'status'=>	'success',
-			'rows'	=>	$data -> rows,
-			'total'	=>	intval( wp_count_posts() -> publish ),
-		];
+			$output = [
+				'data'	=>	$data -> data,
+				'status'=>	'success',
+				'rows'	=>	$data -> rows,
+				'total'	=>	intval( wp_count_posts() -> publish ),
+			];
+		}	// end try
+		catch( Exception $error ) {
+			$output = [
+				'message'	=>	$error -> getMessage(),
+				'status'	=>	'error',
+			];
+		}	// end catch
 	}	// end if
 
 	header( 'Content-Type: application/json' );
