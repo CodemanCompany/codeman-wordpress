@@ -93,7 +93,7 @@ function get_config( array $params = NULL ): array {
 	$is_singular = is_singular();
 
 	if( isset( $params[ 'category__and' ] ) ) {
-		$categories = explode( ',', $params[ 'category__and' ] );
+		$categories = explode( ',', trim( $params[ 'category__and' ], ',' ) );
 
 		$ids = [];
 		foreach( $categories as $category ) {
