@@ -26,6 +26,7 @@ define( 'POSTS_PER_PAGE', 15 );
 define( 'POSTS_PER_SIDEBAR', 6 );
 define( 'RECAPTCHA_SECRET', '' );
 define( 'TEMPLATE_PATH', get_template_directory() . '/' );
+define( 'HEADERS_MAIL', [ 'Content-Type: text/html; charset=UTF-8' ] );
 
 function codeman_wp_title( string $title, string $sep ): string {
 	$title .= get_bloginfo( 'name', 'display' );
@@ -655,7 +656,7 @@ function send_mail( array $params = NULL ) {
 
 	unset( $key, $value );
 
-	wp_mail( $params[ 'to' ], $params[ 'subject' ], $html );
+	wp_mail( $params[ 'to' ], $params[ 'subject' ], $html, HEADERS_MAIL );
 }	// end function
 
 function send_smtp_email( PHPMailer $phpmailer ) {
@@ -670,10 +671,6 @@ function send_smtp_email( PHPMailer $phpmailer ) {
 	$phpmailer -> FromName = 'WordPress';
 }	// end function
 
-function wpdocs_set_html_mail_content_type(): string {
-	return 'text/html';
-}	// end function
-
 add_action( 'phpmailer_init', 'send_smtp_email' );
 add_action( 'pre_get_posts', 'my_post_queries' );
 add_action( 'wp_ajax_instagram', 'instagram' );
@@ -685,7 +682,6 @@ add_action( 'wp_ajax_nopriv_new_contact', 'new_contact' );
 add_action( 'wp_ajax_new_subscription', 'new_subscription' );
 add_action( 'wp_ajax_nopriv_new_subscription', 'new_subscription' );
 
-add_filter( 'wp_mail_content_type', 'wpdocs_set_html_mail_content_type' );
 add_filter( 'wp_page_menu_args', 'my_page_menu_args' );
 add_filter( 'wp_title', 'codeman_wp_title', 10, 2 );
 
