@@ -8,7 +8,7 @@ var_dump( CATEGORY );
 		<section class="col-xs-9">
 			<?php
 				try {
-					foreach( get_publications_for( [ 'category_name' => CATEGORY[ 'slug' ] ] ) -> data as $post ):?>
+					foreach( get_publications_for( [ 'category__and' => CATEGORY[ 'slug' ] ] ) -> data as $post ):?>
 						<article><a href="#"><pre><?php var_dump( $post );?></pre></a></article>
 					<?php endforeach;
 					unset( $post );

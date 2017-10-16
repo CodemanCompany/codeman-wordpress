@@ -22,7 +22,7 @@ register_taxonomy( 'googlemaps', [ 'geolocation' ], ARGS );
 define( 'INSTAGRAM_COUNT', 10 );
 define( 'INSTAGRAM_TOKEN', '' );
 define( 'MAPS_KEY', '' );
-define( 'POSTS_PER_PAGE', 15 );
+define( 'POSTS_PER_PAGE', 10 );
 define( 'POSTS_PER_SIDEBAR', 6 );
 define( 'RECAPTCHA_SECRET', '' );
 define( 'TEMPLATE_PATH', get_template_directory() . '/' );
@@ -69,12 +69,15 @@ function detect_is_mobile(): bool {
 
 // TODO: get_address()
 function get_best_category( array $categories ): stdClass {
+	if( count( $categories ) === 1 )
+		return $categories[ 0 ];
+
 	foreach( ( array ) $categories as $key => $category )
-		if( (
-			$category -> slug == 'category-slug-0' ||
-			$category -> slug == 'category-slug-1' ||
-			count( $categories ) === 1
-		) )
+		if(
+			$category -> slug === 'sin-categoria' ||
+			$category -> slug === 'category-slug-0' ||
+			$category -> slug === 'category-slug-1'
+		)
 			return ( object ) [
 				'count'			=>	$category -> count,
 				'description'	=>	$category -> description,
@@ -87,7 +90,7 @@ function get_best_category( array $categories ): stdClass {
 			];
 	unset( $key, $category );
 
-	throw new Exception( 'Category not found.' );
+	return new stdClass();
 }	// end function
 
 function get_config( array $params = NULL ): array {
@@ -278,8 +281,6 @@ function get_publications( array $query = NULL ): stdClass {
 		];
 
 		$store -> category = isset( $query[ 'category__and' ] ) && count( $query[ 'category__and' ] ) === 1 ? get_data( 'category', $query[ 'category__and' ][ 0 ] )[ 0 ] : get_best_category( $store -> categories );
-		var_dump($store->category);
-		exit;
 
 		// filters
 		$store -> content = $store -> content ? $store -> content : 'It does not have a description.';
