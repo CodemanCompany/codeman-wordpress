@@ -68,26 +68,26 @@ function detect_is_mobile(): bool {
 }	// end function
 
 // TODO: get_address()
-
-function get_best_category( array $categories ) {;
-	if( count( $categories ) === 1 )
-		return ( object ) [
-			'name'	=>	$categories[ 0 ] -> name,
-			'slug'	=>	$categories[ 0 ] -> slug,
-		];
-
-	foreach( ( array ) $categories as $category )
-		if( ! (
-			$category -> slug == 'carousel' ||
-			$category -> slug == 'sin-categoria'
+function get_best_category( array $categories ): stdClass {
+	foreach( ( array ) $categories as $key => $category )
+		if( (
+			$category -> slug == 'category-slug-0' ||
+			$category -> slug == 'category-slug-1' ||
+			count( $categories ) === 1
 		) )
 			return ( object ) [
-				'name'	=>	$category -> name,
-				'slug'	=>	$category -> slug,
+				'count'			=>	$category -> count,
+				'description'	=>	$category -> description,
+				'id'			=>	$category -> id,
+				'index'			=>	$key,
+				'name'			=>	$category -> name,
+				'parent'		=>	$category -> parent,
+				'slug'			=>	$category -> slug,
+				'url'			=>	$category -> url,
 			];
+	unset( $key, $category );
 
-	unset( $category );
-	return FALSE;
+	throw new Exception( 'Category not found.' );
 }	// end function
 
 function get_config( array $params = NULL ): array {
@@ -241,16 +241,16 @@ function get_open_graph() {
 }	// end function
 
 function get_publications( array $query = NULL ): stdClass {
-	if( is_null( $query ) || ! is_array( $query = query_posts( $query ) ) )
+	if( is_null( $query ) || ! is_array( $queries = query_posts( $query ) ) )
 		throw new Exception( 'The query is wrong.' );
 
 	$posts = [];
 
-	foreach( $query as $key => $post ) {
+	foreach( $queries as $key => $post ) {
 		$store = ( object ) [
 			// TODO: Check
 			// 'author'	=>	get_the_author( 1 ),
-			'categories'=>	get_data( 'category', $post -> ID ),
+			'categories'=>	get_data( 'categories', $post -> ID ),
 			'content'	=>	htmlentities( strip_tags( trim( strstr( $post -> post_content, '<!--more-->', TRUE ) ) ) ),
 			'custom'	=>	[],
 			'date'		=>	get_the_date( '', $post -> ID ),
@@ -276,15 +276,17 @@ function get_publications( array $query = NULL ): stdClass {
 			'title'		=>	htmlentities( strip_tags( trim( $post -> post_title ) ) ),
 			'url'		=>	get_permalink( $post -> ID ),
 		];
-		// TODO: Check Remove
-		$store -> category = get_best_category( $store -> categories );
+
+		$store -> category = isset( $query[ 'category__and' ] ) && count( $query[ 'category__and' ] ) === 1 ? get_data( 'category', $query[ 'category__and' ][ 0 ] )[ 0 ] : get_best_category( $store -> categories );
+		var_dump($store->category);
+		exit;
 
 		// filters
 		$store -> content = $store -> content ? $store -> content : 'It does not have a description.';
 
 		$posts[] = $store;
 	}	// end foreach
-	unset( $key, $post );
+	unset( $key, $post, $queries );
 
 	return ( object ) [
 		'data'	=>	$posts,

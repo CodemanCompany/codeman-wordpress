@@ -28,7 +28,7 @@
 			<h2><?php the_title();?></h2>
 			<p><span class="text-muted"><?php the_date();?></span></p>
 			<p><?php the_content();?></p>
-			<a href="/category/<?php echo get_data( 'category' )[ 0 ] -> slug;?>/">back</a>
+			<a href="/category/<?php echo get_data( 'category', get_the_ID() )[ 0 ] -> slug;?>/">back</a>
 
 			<pre>
 			<?php
