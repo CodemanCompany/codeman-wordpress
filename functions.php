@@ -113,7 +113,7 @@ function get_config( array $params = NULL ): array {
 		'orderby'			=>	$params[ 'orderby' ] ?? NULL,
 		'order'				=>	$params[ 'order' ] ?? NULL,
 		'paged'				=>	$params[ 'paged' ] ?? 1,
-		'post__not_in'		=>	$is_singular ? [ get_the_ID() ] : NULL,
+		'post__not_in'		=>	$is_singular ? [ get_the_ID() ] : $params[ 'post__not_in' ] ?? NULL,
 		'post_status'		=>	'publish',
 		'posts_per_page'	=>	$params[ 'posts_per_page' ] ?? POSTS_PER_PAGE,
 		'post_type'			=>	$params[ 'post_type' ] ?? NULL,
@@ -254,7 +254,7 @@ function get_publications( array $query = NULL ): stdClass {
 			// TODO: Check
 			// 'author'	=>	get_the_author( 1 ),
 			'categories'=>	get_data( 'categories', $post -> ID ),
-			'content'	=>	htmlentities( strip_tags( trim( strstr( $post -> post_content, '<!--more-->', TRUE ) ) ) ),
+			'content'	=>	strip_tags( trim( strstr( $post -> post_content, '<!--more-->', TRUE ) ) ),
 			'custom'	=>	[],
 			'date'		=>	get_the_date( '', $post -> ID ),
 			'field'		=>	( object ) [
@@ -276,7 +276,7 @@ function get_publications( array $query = NULL ): stdClass {
 			'status'	=>	$post -> post_status,
 			'tags'		=>	get_tags_codeman( $post -> ID, 'post_tag' ),
 			'googlemaps'	=>	get_tags_codeman( $post -> ID, 'googlemaps' ),
-			'title'		=>	htmlentities( strip_tags( trim( $post -> post_title ) ) ),
+			'title'		=>	strip_tags( trim( $post -> post_title ) ),
 			'url'		=>	get_permalink( $post -> ID ),
 		];
 
@@ -314,9 +314,9 @@ function get_publications_for( array $params = NULL ): stdClass {
 
 function get_search( bool $echo = TRUE ) {
 	if( ! $echo )
-		return htmlentities( $_GET[ 's' ] ?? '' );
+		return strip_tags( $_GET[ 's' ] ?? '' );
 
-	echo htmlentities( $_GET[ 's' ] ?? '' );
+	echo strip_tags( $_GET[ 's' ] ?? '' );
 }	// end function
 
 function get_subterms( string $slug = NULL, string $taxonomy = NULL ): array {
