@@ -45,7 +45,7 @@
 			<div class="fb-comments" data-href='<?php get_location();?>' data-numposts="5" data-width="100%"></div>
 
 			<?php endwhile; endif;?>
-		</article>	
+		</article>
 
 		<aside class="col-xs-3">
 			<?php get_template_part( 'structure/sidebar' );?>

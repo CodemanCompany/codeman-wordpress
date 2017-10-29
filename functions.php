@@ -170,20 +170,20 @@ function get_data( string $type = NULL, int $id = NULL ): array {
 }	// end function
 
 function get_ip(): string {
-    if( getenv( 'HTTP_CLIENT_IP' ) )
-        return getenv( 'HTTP_CLIENT_IP' );
-    elseif( getenv( 'HTTP_X_FORWARDED_FOR' ) )
-        return getenv( 'HTTP_X_FORWARDED_FOR' );
-    elseif( getenv( 'HTTP_X_FORWARDED' ) )
-        return getenv( 'HTTP_X_FORWARDED' );
-    elseif( getenv( 'HTTP_FORWARDED_FOR' ) )
-        return getenv( 'HTTP_FORWARDED_FOR' );
-    elseif( getenv( 'HTTP_FORWARDED' ) )
-       return getenv( 'HTTP_FORWARDED' );
-    elseif( getenv( 'REMOTE_ADDR' ) )
-        return getenv( 'REMOTE_ADDR' );
-    else
-        return 'unknown';
+	if( getenv( 'HTTP_CLIENT_IP' ) )
+		return getenv( 'HTTP_CLIENT_IP' );
+	elseif( getenv( 'HTTP_X_FORWARDED_FOR' ) )
+		return getenv( 'HTTP_X_FORWARDED_FOR' );
+	elseif( getenv( 'HTTP_X_FORWARDED' ) )
+		return getenv( 'HTTP_X_FORWARDED' );
+	elseif( getenv( 'HTTP_FORWARDED_FOR' ) )
+		return getenv( 'HTTP_FORWARDED_FOR' );
+	elseif( getenv( 'HTTP_FORWARDED' ) )
+		return getenv( 'HTTP_FORWARDED' );
+	elseif( getenv( 'REMOTE_ADDR' ) )
+		return getenv( 'REMOTE_ADDR' );
+	else
+		return 'unknown';
 }	// end function
 
 function get_jwplayer( string $service = NULL ) {
