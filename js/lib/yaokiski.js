@@ -80,7 +80,8 @@ var yaokiski = angular.module( 'yaokiski', [] )
 				share = 'https://twitter.com/share?via=CHANGE_USER&text=' + data.content + '&url=' + data.url;
 				break;
 			case 'whatsapp':
-				location.href = encodeURI( 'whatsapp://send?text=CHANGE_USER: ' + data.content + ' ' + data.url );
+				window.open( encodeURI( 'whatsapp://send?text=CHANGE_USER: ' + data.content + ' ' + data.url ) );
+				return;
 				break;
 		}	// end switch
 
@@ -284,10 +285,10 @@ var yaokiski = angular.module( 'yaokiski', [] )
 		if( typeof base != 'object' || typeof object != 'object' )
 			throw new Error( 'Incorrect parameters.' );
 
-		if( typeof Object.assign != undefined )
-			return Object.assign( base, object );
+		// if( typeof Object.assign != undefined )
+		// 	return Object.assign( base, object );
 
-		else {
+		// else {
 			var data = [];
 
 			console.debug( 'Alternative!' );
@@ -299,7 +300,7 @@ var yaokiski = angular.module( 'yaokiski', [] )
 				data.push( object[ index ] );
 
 			return data;
-		}	// end else
+		// }	// end else
 	};
 
 	return useful;
