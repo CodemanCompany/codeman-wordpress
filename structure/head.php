@@ -1,5 +1,5 @@
 <meta charset="<?php bloginfo( 'charset' );?>" />
-<meta name="description" content="<?php is_single() ? single_post_title( '', true ) : bloginfo( 'description' );?>" />
+<meta name="description" content="<?php get_description();?>" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#ffffff" />
 

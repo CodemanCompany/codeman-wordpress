@@ -252,7 +252,7 @@ function get_data( string $type = NULL, int $id = NULL ): array {
 	return $data;
 }	// end function
 
-function get_description() {
+function get_description(): void {
 	if( is_single() )
 		single_post_title( '', true );
 	elseif( is_category() ) {
@@ -768,8 +768,10 @@ function send_smtp_email( PHPMailer $phpmailer ): void {
 	$phpmailer -> FromName = 'WordPress';
 }	// end function
 
-function set_author( int $id, WP_Post $post ) {
+// TODO: Check for remove $post param
+function set_author( int $id, WP_Post $post ): void {
 	$field = get_custom( [ 'id' => $id, 'key' => 'author' ] );
+
 	if( is_null( $field ) ) {
 		add_post_meta( $id, 'author', 'Codeman', true );
 	}	// end if
