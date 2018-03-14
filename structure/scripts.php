@@ -4,6 +4,7 @@
 <script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
 <script src="<?php bloginfo( 'template_url' );?>/node_modules/jquery/dist/jquery.slim.js"></script>
 <script src="<?php bloginfo( 'template_url' );?>/node_modules/@fancyapps/fancybox/dist/jquery.fancybox.min.js"></script>
+<script src="<?php bloginfo( 'template_url' );?>/node_modules/popper.js/dist/umd/popper.min.js"></script>
 <script src="<?php bloginfo( 'template_url' );?>/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="<?php bloginfo( 'template_url' );?>/node_modules/angular/angular.min.js"></script>
 <script src="<?php bloginfo( 'template_url' );?>/node_modules/angular-sanitize/angular-sanitize.min.js"></script>
