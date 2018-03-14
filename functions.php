@@ -7,6 +7,8 @@
 //  ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝
 
 // Init
+date_default_timezone_set( 'America/Mexico_City' );
+
 // New Taxonomy
 define( 'ARGS', [
 	'hierarchical'		=>	TRUE,
@@ -27,6 +29,56 @@ define( 'POSTS_PER_SIDEBAR', 6 );
 define( 'RECAPTCHA_SECRET', '' );
 define( 'TEMPLATE_PATH', get_template_directory() . '/' );
 define( 'HEADERS_MAIL', [ 'Content-Type: text/html; charset=UTF-8' ] );
+
+class Cokidoo_DateTime extends DateTime {
+	protected $strings = [
+		'y'	=>	[ 'Hace 1 año', 'Hace %d años' ],
+		'm'	=>	[ 'Hace 1 mes', 'Hace %d meses' ],
+		'd'	=>	[ 'Hace 1 día', 'Hace %d días' ],
+		'h'	=>	[ 'Hace 1 hora', 'Hace %d horas' ],
+		'i'	=>	[ 'Hace 1 minuto', 'Hace %d minutos' ],
+		's'	=>	[ 'Hace unos instantes', 'Hace %d segundos' ],
+	];
+
+	/**
+	* Returns the difference from the current time in the format X time ago
+	* @return string
+	*/
+	public function __toString() {
+		$now = new DateTime( 'now' );
+		$diff = $this -> diff( $now );
+
+		foreach( $this -> strings as $key => $value )
+			if( ( $text = $this -> getDiffText( $key, $diff ) ) )
+				return $text;
+
+		return '';
+	}	// end method
+
+	/**
+	* Try to construct the time diff text with the specified interval key
+	* @param string $intervalKey A value of: [y,m,d,h,i,s]
+	* @param DateInterval $diff
+	* @return string|null
+	*/
+	protected function getDiffText( $intervalKey, $diff ) {
+		$pluralKey = 1;
+		$value = $diff -> $intervalKey;
+		if( $value > 0 ) {
+			if( $value < 2 ) {
+				$pluralKey = 0;
+			}	// end if
+
+			return sprintf( $this -> strings[ $intervalKey ][ $pluralKey ], $value );
+		}	// end if
+
+		return NULL;
+	}	// end method
+}	// end class
+
+function ago( string $date ): string {
+	return new Cokidoo_Datetime( $date );
+}	// end function
 
 function codeman_wp_title( string $title, string $sep ): string {
 	$title .= get_bloginfo( 'name', 'display' );
@@ -65,6 +117,37 @@ function detect_is_mobile(): bool {
 		$is_mobile = FALSE;
 
 	return $is_mobile;
+}	// end function
+
+function gallery_html( array $atts ): string {
+	$gallery = [];
+
+	foreach( explode( ',' , $atts[ 'ids' ] ) as $key => $value ) {
+		$gallery[] = [
+			'id'			=>	intval( $value ),
+			'index'			=>	$key,
+			'image'			=>	wp_get_attachment_image_src( $value, 'medium_large' )[ 0 ],
+			'description'	=>	get_post( $value ) -> post_excerpt,
+		];
+	}	// end foreach
+	unset( $key, $value );
+
+	$items = '';
+	define( 'TOTAL', count( $gallery ) );
+	foreach( $gallery as $image ) {
+		$items .= '<div class="item ' . ( $image[ 'index' ] === 0 ? 'active' : '' ) . '">
+			<figure style="background-image: url( \'' . $image[ 'image' ] . '\' )">
+				<span>' . ( $image[ 'index' ] + 1 ) . ' / ' . TOTAL . '</span>
+			</figure>
+			<p>' . $image[ 'description' ] . '</p>
+		</div>';
+	}	// end foreach
+	unset( $key, $value );
+
+	$html = file_get_contents( TEMPLATE_PATH . 'template/gallery.html' );
+	$html = str_replace( '{id}', 'gallery' . time(), $html );
+	$html = str_replace( '{items}', $items, $html );
+	return $html;
 }	// end function
 
 // TODO: get_address()
@@ -169,6 +252,17 @@ function get_data( string $type = NULL, int $id = NULL ): array {
 	return $data;
 }	// end function
 
+function get_description() {
+	if( is_single() )
+		single_post_title( '', true );
+	elseif( is_category() ) {
+		$category = get_data( 'category', get_cat_ID( single_cat_title( '', false ) ) )[ 0 ];
+		echo $category -> description;
+	}	// end if
+	else
+		bloginfo( 'description' );
+}	// end function
+
 function get_ip(): string {
 	if( getenv( 'HTTP_CLIENT_IP' ) )
 		return getenv( 'HTTP_CLIENT_IP' );
@@ -186,9 +280,9 @@ function get_ip(): string {
 		return 'unknown';
 }	// end function
 
-function get_jwplayer( string $service = NULL ) {
+function get_jwplayer( string $service = NULL ): void {
 	if( is_null( $service ) )
-		return;
+		throw new Exception( 'Undefined service key.' );
 
 	$video = get_custom( [ 'key' => 'video' ] );
 	echo $video ? '<div id="botr_' . $video . '_' . $service . '_div"></div><script type="text/javascript" src="https://content.jwplatform.com/players/' . $video . '-' . $service . '.js"></script>' : '';
@@ -251,8 +345,8 @@ function get_publications( array $query = NULL ): stdClass {
 
 	foreach( $queries as $key => $post ) {
 		$store = ( object ) [
-			// TODO: Check
-			// 'author'	=>	get_the_author( 1 ),
+			// TODO: Check Author
+			'author'	=>	get_the_author( 1 ),
 			'categories'=>	get_data( 'categories', $post -> ID ),
 			'content'	=>	strip_tags( trim( strstr( $post -> post_content, '<!--more-->', TRUE ) ) ),
 			'custom'	=>	[],
@@ -382,7 +476,7 @@ function get_url( bool $echo = TRUE ) {
 	echo get_permalink();
 }	// end function
 
-function instagram() {
+function instagram(): void {
 	$output = [
 		'message'	=>	'Bad request',
 		'status'	=>	'error',
@@ -403,7 +497,7 @@ function instagram() {
 	exit;
 }	// end function
 
-function image_dir() {
+function image_dir(): void {
 	echo get_template_directory_uri() .'/img';
 }	// end function
 
@@ -411,7 +505,7 @@ function is_draft(): bool {
 	return is_user_logged_in() && is_preview();
 }	// end function
 
-function load_more() {
+function load_more(): void {
 	$output = [
 		'message'	=>	'Bad request',
 		'status'	=>	'error',
@@ -457,7 +551,7 @@ function my_page_menu_args( array $args ): array {
 	return $args;
 }	// end function
 
-function my_post_queries( WP_Query $query ) {
+function my_post_queries( WP_Query $query ): void {
 	if( ! is_admin() && $query -> is_main_query() ) {
 		$query -> set( 'post_status', is_draft() ? 'draft' : 'publish' );
 
@@ -472,7 +566,7 @@ function my_post_queries( WP_Query $query ) {
 	}	// end if
 }	// end function
 
-function new_contact() {
+function new_contact(): void {
 	header( 'Content-Type: application/json' );
 	
 	$output = [
@@ -548,7 +642,7 @@ function new_contact() {
 	exit;
 }	// end function
 
-function new_subscription() {
+function new_subscription(): void {
 	header( 'Content-Type: application/json' );
 	
 	$output = [
@@ -615,7 +709,7 @@ function new_subscription() {
 	exit;
 }	// end function
 
-function recaptcha( string $response = NULL ) {
+function recaptcha( string $response = NULL ): void {
 	if( ! is_string( $response ) )
 		throw new Exception( 'Invalid secret.' );
 
@@ -636,7 +730,7 @@ function recaptcha( string $response = NULL ) {
 		throw new Exception( 'Is robot. We take legal actions.' );
 }	// end function
 
-function send_mail( array $params = NULL ) {
+function send_mail( array $params = NULL ): void {
 	if(
 		! is_array( $params ) ||
 		! is_array( $params[ 'to' ] ?? NULL ) ||
@@ -662,7 +756,7 @@ function send_mail( array $params = NULL ) {
 	wp_mail( $params[ 'to' ], $params[ 'subject' ], $html, HEADERS_MAIL );
 }	// end function
 
-function send_smtp_email( PHPMailer $phpmailer ) {
+function send_smtp_email( PHPMailer $phpmailer ): void {
 	$phpmailer -> isSMTP();
 	$phpmailer -> Host = 'email-smtp.us-east-1.amazonaws.com';
 	$phpmailer -> SMTPAuth = TRUE;
@@ -672,6 +766,31 @@ function send_smtp_email( PHPMailer $phpmailer ) {
 	$phpmailer -> SMTPSecure = 'tls';
 	$phpmailer -> From = 'wordpress@codeman.company';
 	$phpmailer -> FromName = 'WordPress';
+}	// end function
+
+function set_author( int $id, WP_Post $post ) {
+	$field = get_custom( [ 'id' => $id, 'key' => 'author' ] );
+	if( is_null( $field ) ) {
+		add_post_meta( $id, 'author', 'Codeman', true );
+	}	// end if
+}	// end function
+
+function set_view( int $id ): int {
+	$views = get_post_meta( $id, 'counter' );
+
+	if( empty( $views ) ) {
+		$views = 0;
+		add_post_meta( $id, 'counter', 1, TRUE );
+	}	// end if
+	elseif( ! isset( $_COOKIE[ 'vote_' . $id ] ) ) {
+		$views = intval( $views[ 0 ] ) + 1;
+		update_post_meta( $id, 'counter', $views );
+		setcookie( 'vote_' . $id, TRUE, time() + 3600 );
+	}	// end else
+	else
+		$views = $views[ 0 ];
+
+	return $views;
 }	// end function
 
 add_action( 'phpmailer_init', 'send_smtp_email' );
@@ -690,3 +809,7 @@ add_filter( 'wp_title', 'codeman_wp_title', 10, 2 );
 
 add_theme_support( 'post-formats', [ 'gallery' ] );
 add_theme_support( 'post-thumbnails' );
+
+// Remove Gallery
+remove_shortcode( 'gallery', 'gallery_shortcode' );
+add_shortcode( 'gallery', 'gallery_html' );
