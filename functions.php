@@ -551,7 +551,7 @@ function my_page_menu_args( array $args ): array {
 	return $args;
 }	// end function
 
-function my_post_queries( WP_Query $query ): void {
+function my_post_queries( WP_Query $query ) {
 	if( ! is_admin() && $query -> is_main_query() ) {
 		$query -> set( 'post_status', is_draft() ? 'draft' : 'publish' );
 
