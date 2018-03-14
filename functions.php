@@ -497,7 +497,7 @@ function instagram(): void {
 	exit;
 }	// end function
 
-function image_dir(): void {
+function image_dir() {
 	echo get_template_directory_uri() .'/img';
 }	// end function
 
