@@ -252,7 +252,7 @@ function get_data( string $type = NULL, int $id = NULL ): array {
 	return $data;
 }	// end function
 
-function get_description(): void {
+function get_description() {
 	if( is_single() )
 		single_post_title( '', true );
 	elseif( is_category() ) {
