@@ -17,11 +17,11 @@
   },
   "homepage": "https://github.com/CodemanCompany/codeman-wordpress#readme",
   "dependencies": {
-    "@fancyapps/fancybox": "^3.2.5",
-    "angular": "^1.6.9",
-    "angular-sanitize": "^1.6.9",
-    "bootstrap": "^4.0.0",
+    "@fancyapps/fancybox": "^3.3.5",
+    "angular": "^1.7.2",
+    "angular-sanitize": "^1.7.2",
+    "bootstrap": "^4.1.1",
     "jquery": "^3.3.1",
-    "popper.js": "^1.14.1"
+    "popper.js": "^1.14.3"
   }
 }
