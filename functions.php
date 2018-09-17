@@ -608,7 +608,7 @@ function new_contact(): void {
 			] );
 
 			send_mail( [
-				'to'		=>	[ 'gustavo@codeman.company' ],
+				'to'		=>	[ 'support@codeman.company' ],
 				'template'	=>	'delivery.html',
 				'subject'	=>	'💡 Tienes un nuevo contacto en tu sitio web',
 				'data'		=>	( array ) $input,
@@ -678,7 +678,7 @@ function new_subscription(): void {
 			] );
 
 			send_mail( [
-				'to'		=>	[ 'gustavo@codeman.company' ],
+				'to'		=>	[ 'support@codeman.company' ],
 				'template'	=>	'subscription.html',
 				'subject'	=>	'💡 Tienes un nuevo suscriptor en tu sitio web',
 				'data'		=>	( array ) $input,
