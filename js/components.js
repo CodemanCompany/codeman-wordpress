@@ -44,7 +44,7 @@ app.component( 'contact', {
 			$scope.input = {};
 		};	
 	} ],
-	"templateUrl":	'/wp-content/themes/codeman-wordpress-2.2.2/component/contact.html',
+	"templateUrl":	'/wp-content/themes/codeman-wordpress-2.2.3/component/contact.html',
 } );
 
 app.component( 'newsletter', {
@@ -90,9 +90,9 @@ app.component( 'newsletter', {
 			$scope.input = {};
 		};	
 	} ],
-	"templateUrl":	'/wp-content/themes/codeman-wordpress-2.2.2/component/newsletter.html',
+	"templateUrl":	'/wp-content/themes/codeman-wordpress-2.2.3/component/newsletter.html',
 } );
 
 app.component( 'search', {
-	"templateUrl":	'/wp-content/themes/codeman-wordpress-2.2.2/component/search.html',
+	"templateUrl":	'/wp-content/themes/codeman-wordpress-2.2.3/component/search.html',
 } );

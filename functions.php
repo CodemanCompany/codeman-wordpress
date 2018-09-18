@@ -730,6 +730,16 @@ function recaptcha( string $response = NULL ): void {
 		throw new Exception( 'Is robot. We take legal actions.' );
 }	// end function
 
+function security_remove_endpoints( $endpoints ){
+	if ( isset( $endpoints[ '/wp/v2/users' ] ) )
+		unset( $endpoints[ '/wp/v2/users' ] );
+
+	if ( isset( $endpoints[ '/wp/v2/users/(?P<id>[\d]+)' ] ) )
+		unset( $endpoints[ '/wp/v2/users/(?P<id>[\d]+)' ] );
+
+	return $endpoints;
+}	// end function
+
 function send_mail( array $params = NULL ): void {
 	if(
 		! is_array( $params ) ||
@@ -806,6 +816,7 @@ add_action( 'wp_ajax_nopriv_new_contact', 'new_contact' );
 add_action( 'wp_ajax_new_subscription', 'new_subscription' );
 add_action( 'wp_ajax_nopriv_new_subscription', 'new_subscription' );
 
+add_filter( 'rest_endpoints', 'security_remove_endpoints' );
 add_filter( 'wp_page_menu_args', 'my_page_menu_args' );
 add_filter( 'wp_title', 'codeman_wp_title', 10, 2 );
 
