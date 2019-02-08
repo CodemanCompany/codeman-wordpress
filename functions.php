@@ -348,7 +348,7 @@ function get_publications( array $query = NULL ): stdClass {
 			// TODO: Check Author
 			'author'	=>	get_the_author( 1 ),
 			'categories'=>	get_data( 'categories', $post -> ID ),
-			'content'	=>	strip_tags( trim( strstr( $post -> post_content, '<!--more-->', TRUE ) ) ),
+			'content'	=>	trim( strip_tags( trim( strstr( $post -> post_content, '<!--more-->', TRUE ) ) ) ),
 			'custom'	=>	[],
 			'date'		=>	get_the_date( '', $post -> ID ),
 			'field'		=>	( object ) [
@@ -377,7 +377,7 @@ function get_publications( array $query = NULL ): stdClass {
 		$store -> category = isset( $query[ 'category__and' ] ) && count( $query[ 'category__and' ] ) === 1 ? get_data( 'category', $query[ 'category__and' ][ 0 ] )[ 0 ] : get_best_category( $store -> categories );
 
 		// filters
-		$store -> content = $store -> content ? $store -> content : 'It does not have a description.';
+		$store -> content = $store -> content ?? 'It does not have a description.';
 
 		$posts[] = $store;
 	}	// end foreach
