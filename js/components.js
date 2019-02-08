@@ -1,14 +1,9 @@
 app.component( 'contact', {
-	"controller":	[ '$scope', 'request', function( $scope, request ) {
-		$scope.loading = false;
+	"controller":	[ '$scope', 'request', 'validation', ( $scope, request, validation ) => {
+		$scope.input = {};
+		$scope.validation = validation;
 
-		angular.element( document ).ready( function () {
-			grecaptcha.render( 'g-recaptcha-contact', {
-				"sitekey": "6LezZy4UAAAAAPCQYl0U63f-rvAsI_phC6pGLVVv",
-			} );
-		} );
-
-		$scope.action = function() {
+		$scope.action = () => {
 			if( $scope.form.$invalid ) {
 				$scope.form.email.$pristine = false;
 				$scope.form.message.$pristine = false;
@@ -18,77 +13,106 @@ app.component( 'contact', {
 				return;
 			}	// end if
 
-			$scope.input[ 'g-recaptcha-response' ] = angular.element( '#g-recaptcha-response' ).val();
-			if( ! $scope.input[ 'g-recaptcha-response' ] ) {
-				$scope.recaptcha = true;
-				return;
-			}	// end if
-
-			$scope.loading = true;
-
-			request.post( request.url.controller.wordpress + '?action=new_contact', $scope.input )
-			.then( function( response ) {
-				if( request.check( response ) )
-					alert( 'Success' );
-				else
-					alert( 'Error' );
-				$scope.reset();
-			}, function( error ) {} );
+			grecaptcha.ready( () => {
+				grecaptcha.execute( '6LcWlosUAAAAANwj1zfKXKmOpfyQHczJiXvlwRBj', { "action": "homepage" } )
+				.then( ( token ) => {
+					Swal.fire( {
+						"allowOutsideClick": false,
+						"text": "Espere un momento por favor.",
+						"title": "Enviando mensaje ...",
+					} )
+					Swal.showLoading();
+		
+					$scope.input[ 'g-recaptcha-response' ] = token;
+					request.post( '/controller/contact.php', $scope.input, false )
+					.then( ( response ) => {
+						Swal.close();
+		
+						if( request.check( response ) ) {
+							Swal.fire( {
+								"confirmButtonText": "Aceptar",
+								"text": "Operación realizada con éxito.",
+								"title": "Éxito",
+								"type": "success",
+							} );
+						}	// end if
+						else {
+							Swal.fire( {
+								"confirmButtonText": "Aceptar",
+								"text": "Por el momento no se puede realizar la operación, intente de nueva más tarde.",
+								"title": "Atención",
+								"type": "error",
+							} );
+						}	// end else
+		
+						$scope.reset();
+					}, ( error ) => {} );
+				} );
+			} );
 		};
 
-		$scope.reset = function() {
-			$scope.loading = false;
-			$scope.recaptcha = false;
-			grecaptcha.reset();
+		$scope.reset = () => {
 			$scope.form.$setPristine();
 			$scope.input = {};
-		};	
+		};
 	} ],
 	"templateUrl":	'/wp-content/themes/codeman-wordpress-2.2.4/component/contact.html',
 } );
 
 app.component( 'newsletter', {
-	"controller":	[ '$scope', 'request', function( $scope, request ) {
-		$scope.loading = false;
+	"controller":	[ '$scope', 'request', 'validation', ( $scope, request, validation ) => {
+		$scope.input = {};
+		$scope.validation = validation;
 
-		angular.element( document ).ready( function () {
-			grecaptcha.render( 'g-recaptcha-newsletter', {
-				"sitekey": "6LezZy4UAAAAAPCQYl0U63f-rvAsI_phC6pGLVVv",
-			} );
-		} );
-
-		$scope.action = function() {
+		$scope.action = () => {
 			if( $scope.form.$invalid ) {
 				$scope.form.email.$pristine = false;
 				$scope.form.name.$pristine = false;
 				return;
 			}	// end if
 
-			$scope.input[ 'g-recaptcha-response' ] = angular.element( '#g-recaptcha-response' ).val();
-			if( ! $scope.input[ 'g-recaptcha-response' ] ) {
-				$scope.recaptcha = true;
-				return;
-			}	// end if
-
-			$scope.loading = true;
-
-			request.post( request.url.controller.wordpress + '?action=new_subscription', $scope.input )
-			.then( function( response ) {
-				if( request.check( response ) )
-					alert( 'Success' );
-				else
-					alert( 'Error' );
-				$scope.reset();
-			}, function( error ) {} );
+			grecaptcha.ready( () => {
+				grecaptcha.execute( '6LcWlosUAAAAANwj1zfKXKmOpfyQHczJiXvlwRBj', { "action": "homepage" } )
+				.then( ( token ) => {
+					Swal.fire( {
+						"allowOutsideClick": false,
+						"text": "Espere un momento por favor.",
+						"title": "Realizando operación ...",
+					} )
+					Swal.showLoading();
+		
+					$scope.input[ 'g-recaptcha-response' ] = token;
+					request.post( request.url.controller.wordpress + '?action=new_subscription', $scope.input, false )
+					.then( ( response ) => {
+						Swal.close();
+		
+						if( request.check( response ) ) {
+							Swal.fire( {
+								"confirmButtonText": "Aceptar",
+								"text": "Operación realizada con éxito.",
+								"title": "Éxito",
+								"type": "success",
+							} );
+						}	// end if
+						else {
+							Swal.fire( {
+								"confirmButtonText": "Aceptar",
+								"text": "Por el momento no se puede realizar la operación, intente de nueva más tarde.",
+								"title": "Atención",
+								"type": "error",
+							} );
+						}	// end else
+		
+						$scope.reset();
+					}, ( error ) => {} );
+				} );
+			} );
 		};
 
-		$scope.reset = function() {
-			$scope.loading = false;
-			$scope.recaptcha = false;
-			grecaptcha.reset();
+		$scope.reset = () => {
 			$scope.form.$setPristine();
 			$scope.input = {};
-		};	
+		};
 	} ],
 	"templateUrl":	'/wp-content/themes/codeman-wordpress-2.2.4/component/newsletter.html',
 } );

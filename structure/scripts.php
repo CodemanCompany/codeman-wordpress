@@ -1,7 +1,9 @@
 <!-- Scripts -->
 <!-- <script src="https://maps.googleapis.com/maps/api/js?key=CODEMAN_API_KEY"></script>
 <script src="js/map.min.js"></script> -->
-<script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"></script>
+
+<!-- reCAPTCHA V3: Easy on Humans, Hard on Bots -->
+<script src="https://www.google.com/recaptcha/api.js?render=6LcWlosUAAAAANwj1zfKXKmOpfyQHczJiXvlwRBj"></script>
 <script src="<?php bloginfo( 'template_url' );?>/node_modules/jquery/dist/jquery.slim.min.js"></script>
 <script src="<?php bloginfo( 'template_url' );?>/node_modules/@fancyapps/fancybox/dist/jquery.fancybox.min.js"></script>
 <script src="<?php bloginfo( 'template_url' );?>/node_modules/popper.js/dist/umd/popper.min.js"></script>
@@ -11,6 +13,10 @@
 <script src="<?php bloginfo( 'template_url' );?>/js/lib/yaokiski.js"></script>
 <script src="<?php bloginfo( 'template_url' );?>/js/app.js"></script>
 <script src="<?php bloginfo( 'template_url' );?>/js/components.js"></script>
+
+<!-- SweetAlert2 -->
+<script src="<?php bloginfo( 'template_url' );?>/node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
+<link href="<?php bloginfo( 'template_url' );?>/node_modules/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet" />
 
 <!-- Facebook -->
 <!-- <div id="fb-root"></div>

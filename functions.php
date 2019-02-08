@@ -713,21 +713,27 @@ function recaptcha( string $response = NULL ): void {
 	if( ! is_string( $response ) )
 		throw new Exception( 'Invalid secret.' );
 
-	$context = stream_context_create( [
-		'http'	=>	[
-			'content'	=>	http_build_query( [
-				'secret'	=>	RECAPTCHA_SECRET,
-				'response'	=>	$response,
-			] ),
-			'header'	=>	'Content-type: application/x-www-form-urlencoded',
-			'method'	=>	'POST',
-		]
-	] );
-	$request = file_get_contents( 'https://www.google.com/recaptcha/api/siteverify', FALSE, $context );
+	// reCAPTCHA
+	$context = [
+		'response' => $response,
+		'secret' => RECAPTCHA_SECRET,
+	];
+
+	$handler = curl_init( 'https://www.google.com/recaptcha/api/siteverify' );
+	curl_setopt( $handler, CURLOPT_POST, true );
+	curl_setopt( $handler, CURLOPT_POSTFIELDS, http_build_query( $context ) );
+	curl_setopt( $handler, CURLOPT_SSL_VERIFYPEER, false );
+	curl_setopt( $handler, CURLOPT_RETURNTRANSFER, true );
+	curl_setopt( $handler, CURLOPT_HEADER, 0 );
+	$request = curl_exec( $handler );
+	curl_close( $handler );
 	$request = json_decode( $request );
 
 	if( ! $request -> success )
 		throw new Exception( 'Is robot. We take legal actions.' );
+
+	if( $request -> score < 0.6 )
+		throw new Exception( 'Your score is very low.' );
 }	// end function
 
 function security_remove_endpoints( $endpoints ){

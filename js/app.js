@@ -1,32 +1,29 @@
-// TODO: Update.
-'use strict'
+const app = angular.module( 'app', [ 'ngSanitize', 'yaokiski' ] )
 
-var app = angular.module( 'app', [ 'ngSanitize', 'yaokiski' ] )
-
-.config( [ function() {
-	$( document ).ready( function() {
-		var go = $( '.go' );
-		var page = $( 'html, body' );
+.config( [ () => {
+	$( document ).ready( () => {
+		let go = $( '.go' );
+		let page = $( 'html, body' );
 
 		go.click( function( event ) {
 			event.preventDefault();
-			var id = $( this ).attr( 'data-href' );
+			let id = $( this ).attr( 'data-href' );
 			page.animate( { scrollTop: $( '#' + id ).offset().top }, 'fast' );
 		} );
 	} );
 } ] )
 
-.controller( 'MainController', [ '$controller', '$scope', 'request', 'useful', function( $controller, $scope, request, useful ) {
+.controller( 'MainController', [ '$controller', '$scope', 'request', 'useful', ( $controller, $scope, request, useful ) => {
 	$controller( 'YaokiskiController', { "$scope": $scope } );
 
 	$scope.loading = false;
 
-	var data = {
+	let data = {
 		"action":	'load_more',
 		"page":		2
 	};
 
-	$scope.loadMore = function( params ) {
+	$scope.loadMore = ( params ) => {
 		$scope.loading = true;
 
 		if( params && params.categories )
@@ -36,13 +33,13 @@ var app = angular.module( 'app', [ 'ngSanitize', 'yaokiski' ] )
 			data.s = params.s;
 
 		request.get( request.url.controller.wordpress, data )
-		.then( function( response ) {
+		.then( ( response ) => {
 			if( request.check( response ) ) {
 				$scope.posts = useful.merge( $scope.posts || [], request.getData().data );
 				data.page++;
 			}	// end if
 
 			$scope.loading = false;
-		}, function( error ) {} )
+		}, ( error ) => {} )
 	};
 } ] );
