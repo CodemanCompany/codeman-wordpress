@@ -56,7 +56,7 @@ app.component( 'contact', {
 			$scope.input = {};
 		};
 	} ],
-	"templateUrl":	'/wp-content/themes/codeman-wordpress-2.2.4/component/contact.html',
+	"templateUrl":	'/wp-content/themes/codeman-wordpress-2.2.5/component/contact.html',
 } );
 
 app.component( 'newsletter', {
