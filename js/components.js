@@ -114,9 +114,9 @@ app.component( 'newsletter', {
 			$scope.input = {};
 		};
 	} ],
-	"templateUrl":	'/wp-content/themes/codeman-wordpress-2.2.4/component/newsletter.html',
+	"templateUrl":	'/wp-content/themes/codeman-wordpress-2.2.5/component/newsletter.html',
 } );
 
 app.component( 'search', {
-	"templateUrl":	'/wp-content/themes/codeman-wordpress-2.2.4/component/search.html',
+	"templateUrl":	'/wp-content/themes/codeman-wordpress-2.2.5/component/search.html',
 } );
