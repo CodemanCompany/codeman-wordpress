@@ -31,17 +31,17 @@ app.component( 'contact', {
 						if( request.check( response ) ) {
 							Swal.fire( {
 								"confirmButtonText": "Aceptar",
+								"icon": "success",
 								"text": "Operación realizada con éxito.",
 								"title": "Éxito",
-								"type": "success",
 							} );
 						}	// end if
 						else {
 							Swal.fire( {
 								"confirmButtonText": "Aceptar",
+								"icon": "error",
 								"text": "Por el momento no se puede realizar la operación, intente de nueva más tarde.",
 								"title": "Atención",
-								"type": "error",
 							} );
 						}	// end else
 		
@@ -56,7 +56,7 @@ app.component( 'contact', {
 			$scope.input = {};
 		};
 	} ],
-	"templateUrl":	'/wp-content/themes/codeman-wordpress-2.2.6/component/contact.html',
+	"templateUrl":	'/wp-content/themes/codeman-wordpress-2.2.7/component/contact.html',
 } );
 
 app.component( 'newsletter', {
@@ -89,17 +89,17 @@ app.component( 'newsletter', {
 						if( request.check( response ) ) {
 							Swal.fire( {
 								"confirmButtonText": "Aceptar",
+								"icon": "success",
 								"text": "Operación realizada con éxito.",
 								"title": "Éxito",
-								"type": "success",
 							} );
 						}	// end if
 						else {
 							Swal.fire( {
 								"confirmButtonText": "Aceptar",
+								"icon": "error",
 								"text": "Por el momento no se puede realizar la operación, intente de nueva más tarde.",
 								"title": "Atención",
-								"type": "error",
 							} );
 						}	// end else
 		
@@ -114,9 +114,9 @@ app.component( 'newsletter', {
 			$scope.input = {};
 		};
 	} ],
-	"templateUrl":	'/wp-content/themes/codeman-wordpress-2.2.6/component/newsletter.html',
+	"templateUrl":	'/wp-content/themes/codeman-wordpress-2.2.7/component/newsletter.html',
 } );
 
 app.component( 'search', {
-	"templateUrl":	'/wp-content/themes/codeman-wordpress-2.2.6/component/search.html',
+	"templateUrl":	'/wp-content/themes/codeman-wordpress-2.2.7/component/search.html',
 } );
