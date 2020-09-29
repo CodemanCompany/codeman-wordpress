@@ -6,6 +6,9 @@
 // ╚██████╗╚██████╔╝██████╔╝███████╗██║ ╚═╝ ██║██║  ██║██║ ╚████║
 //  ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝
 
+// Namespace
+use PHPMailer\PHPMailer\PHPMailer;
+
 // Init
 date_default_timezone_set( 'America/Mexico_City' );
 
